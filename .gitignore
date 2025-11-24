@@ -1,0 +1,13 @@
+node_modules/
+.cache/
+**/node_modules/
+**/.cache/
+web/node_modules/
+web/.cache/
+.expo/
+.expo/*
+.expo/web/
+.expo/web/cache/
+
+node_modules/
+node_modules/.cache/
