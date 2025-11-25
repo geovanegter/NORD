@@ -2,6 +2,8 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 
 const nordLogo = '/nord-logo-white.png';
+const gradientTexture = '/gradient.jpg';
+const gradientOverlay = 'linear-gradient(135deg, rgba(6, 18, 40, 0.95) 0%, rgba(7, 52, 115, 0.9) 55%, rgba(7, 97, 171, 0.85) 100%)';
 
 export default function Sidebar({ isDarkMode, onToggleTheme }) {
   const { user } = useAuth();
@@ -32,8 +34,8 @@ export default function Sidebar({ isDarkMode, onToggleTheme }) {
     <aside
       className="sidebar-quicksand hidden min-h-screen w-64 flex-col justify-between text-white shadow-2xl md:flex"
       style={{
-        backgroundImage: "url('/gradient.jpg')",
-        backgroundSize: '160% 160%',
+        backgroundImage: `${gradientOverlay}, url('${gradientTexture}')`,
+        backgroundSize: '220% 220%, cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center top',
         borderRight: isDarkMode ? '1px solid rgba(15,23,42,0.6)' : '1px solid rgba(15,23,42,0.2)',
