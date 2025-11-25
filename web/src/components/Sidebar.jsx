@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
-import nordLogo from '/nord-logo-white.png';
+
+const nordLogo = '/nord-logo-white.png';
 
 export default function Sidebar({ isDarkMode, onToggleTheme }) {
   const { user } = useAuth();
