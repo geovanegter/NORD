@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { myDayStatus, strategyGuide, managerOverview } from '@/data/mockData.js';
@@ -96,6 +96,26 @@ const weeklyChallenges = [
 ];
 
 const formatCurrency = (value) => `R$ ${value.toLocaleString('pt-BR')}`;
+
+function useLocalizedGreeting() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const info = useMemo(() => {
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+    const localeTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const tzRaw = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
+    const timeZone = tzRaw.replace('_', ' ');
+    return { greeting, localeTime, timeZone };
+  }, [now]);
+
+  return info;
+}
 
 function WeeklyChallengesSection() {
   return (
@@ -257,6 +277,7 @@ function StackedRingsCard({ title, helper, rings }) {
 function RepresentativeHome({ user }) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const { greeting, localeTime, timeZone } = useLocalizedGreeting();
 
   const monthTarget = myDayStatus?.monthTarget ?? 0;
   const currentValue = myDayStatus?.current ?? 0;
@@ -302,7 +323,12 @@ function RepresentativeHome({ user }) {
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-bold text-slate-900">Bom dia, {user?.name?.split(' ')[0] ?? 'representante'}!</h1>
+        <h1 className="text-3xl font-bold text-slate-900">
+          {greeting}, {user?.name?.split(' ')[0] ?? 'representante'}!
+        </h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-500">
+          {localeTime} · {timeZone || 'Horário local'}
+        </p>
         <p className="mt-2 text-sm text-slate-500">
           Faltam {formatCurrency(remaining)} e {daysRemaining} dias para bater a meta desta coleção. Sua meta diária está em{' '}
           {formatCurrency(Math.max(dailyGoal, 0))}.
@@ -451,6 +477,7 @@ function RepresentativeHome({ user }) {
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
   const capitalizedName = user?.name?.split(' ')[0] ?? 'gestor';
+  const { greeting, localeTime, timeZone } = useLocalizedGreeting();
   const metaPercent = meta?.percent ?? 0;
   const timePct = timePercent ?? 0;
   const managerRings = [
@@ -476,7 +503,12 @@ function ManagerHome({ user }) {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
           <div className="flex-1">
             <p className="text-sm font-medium text-indigo-500">Visão tática - Região {meta.region}</p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900">Bom dia, {capitalizedName}!</h1>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+              {greeting}, {capitalizedName}!
+            </h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-500">
+              {localeTime} · {timeZone || 'Horário local'}
+            </p>
             <p className="mt-2 text-sm text-slate-500">
               Meta em {metaPercent}% · faltam {formatCurrency(meta.remaining)} e {meta.daysLeft} dias para fechar.
             </p>
