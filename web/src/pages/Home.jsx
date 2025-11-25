@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { myDayStatus, strategyGuide, managerOverview } from '@/data/mockData.js';
@@ -339,7 +339,7 @@ function RepresentativeHome({ user }) {
             🔍
           </span>
           <input
-            className="w-full rounded-2xl border border-emerald-200 bg-white px-12 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+            className="ai-search-input w-full rounded-2xl border border-emerald-200 bg-white px-12 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
             placeholder="Busque cliente, produto ou ação com IA..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
