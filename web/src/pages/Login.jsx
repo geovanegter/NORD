@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
-const nordLogo = '/nord-logo.png';
+import nordLogo from '@/assets/nord-logo.png';
 
 const placeholders = [
   'Inteligencia comercial, agora no navegador.',
