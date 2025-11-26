@@ -14,6 +14,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--app-bg);
+  background-image: none;
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -88,4 +89,13 @@ body {
   animation-duration: 2.5s;
   background-position: 100% 0;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+@media (max-width: 768px) {
+  body {
+    background-image: url('/gradient-cel.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+  }
 }

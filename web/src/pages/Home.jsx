@@ -2,19 +2,33 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { myDayStatus, strategyGuide, managerOverview } from '@/data/mockData.js';
+import {
+  Home as HomeIcon,
+  Users,
+  MapPinned,
+  GraduationCap,
+  Trophy,
+  UserRound,
+  Route,
+  Joystick,
+} from 'lucide-react';
 
 const shortcutLinks = [
-  { id: 'clientes', label: 'Clientes', to: '/clientes', helper: 'IA sugere quem visitar', icon: '📇' },
-  { id: 'roteiro', label: 'Roteiro', to: '/roteiro', helper: 'Monte o plano da semana', icon: '🧭' },
-  { id: 'games', label: 'Games', to: '/games', helper: '+150 pts hoje', icon: '🏅' },
-  { id: 'treinamentos', label: 'Treinamentos', to: '/treinamentos', helper: 'Cursos rápidos + desafios', icon: '🎥' },
+  { id: 'home', label: 'Home', to: '/', helper: 'Visão geral do dia', icon: HomeIcon },
+  { id: 'clientes', label: 'Clientes', to: '/clientes', helper: 'IA sugere quem visitar', icon: Users },
+  { id: 'roteiro', label: 'Roteiro', to: '/roteiro', helper: 'Monte o plano da semana', icon: MapPinned },
+  { id: 'treinamentos', label: 'Treinamentos', to: '/treinamentos', helper: 'Cursos rápidos + desafios', icon: GraduationCap },
+  { id: 'games', label: 'Games', to: '/games', helper: '+150 pts hoje', icon: Trophy },
+  { id: 'perfil', label: 'Perfil', to: '/perfil', helper: 'Atualize seu status', icon: UserRound },
 ];
 
 const managerShortcuts = [
-  { id: 'equipes', label: 'Representantes', to: '/gerente/representantes', helper: 'Veja desempenho e riscos', icon: '👥' },
-  { id: 'clientes', label: 'Clientes', to: '/gerente/clientes', helper: 'Priorize contas estratégicas', icon: '🏢' },
-  { id: 'roteiro', label: 'Roteiro tático', to: '/gerente/roteiro', helper: 'Planeje a semana com IA', icon: '🗺️' },
-  { id: 'games', label: 'Games equipe', to: '/gerente/games', helper: 'Engaje e acompanhe desafios', icon: '🏆' },
+  { id: 'home', label: 'Home', to: '/', helper: 'Pulso regional', icon: HomeIcon },
+  { id: 'equipes', label: 'Representantes', to: '/gerente/representantes', helper: 'Veja desempenho e riscos', icon: Users },
+  { id: 'clientes', label: 'Clientes', to: '/gerente/clientes', helper: 'Priorize contas estratégicas', icon: MapPinned },
+  { id: 'roteiro', label: 'Roteiro tático', to: '/gerente/roteiro', helper: 'Planeje a semana com IA', icon: Route },
+  { id: 'games', label: 'Games equipe', to: '/gerente/games', helper: 'Engaje e acompanhe desafios', icon: Joystick },
+  { id: 'perfil', label: 'Perfil', to: '/perfil', helper: 'Configurações rápidas', icon: UserRound },
 ];
 
 const priorityClients = [
@@ -96,6 +110,7 @@ const weeklyChallenges = [
 ];
 
 const formatCurrency = (value) => `R$ ${value.toLocaleString('pt-BR')}`;
+const IA_PLACEHOLDER_PROMPT = 'Como posso te ajudar a vender mais?';
 
 function useLocalizedGreeting() {
   const [now, setNow] = useState(() => new Date());
@@ -277,7 +292,21 @@ function StackedRingsCard({ title, helper, rings }) {
 function RepresentativeHome({ user }) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const { greeting, localeTime, timeZone } = useLocalizedGreeting();
+  const { greeting } = useLocalizedGreeting();
+  const [placeholderText, setPlaceholderText] = useState('');
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index += 1;
+      if (index <= IA_PLACEHOLDER_PROMPT.length) {
+        setPlaceholderText(IA_PLACEHOLDER_PROMPT.slice(0, index));
+      } else {
+        clearInterval(interval);
+      }
+    }, 60);
+    return () => clearInterval(interval);
+  }, []);
 
   const monthTarget = myDayStatus?.monthTarget ?? 0;
   const currentValue = myDayStatus?.current ?? 0;
@@ -296,15 +325,15 @@ function RepresentativeHome({ user }) {
       id: 'rep-meta',
       label: 'Meta da coleção',
       percent: Math.round(monthPercent * 100),
-      color: '#f97316',
-      trackColor: 'rgba(249, 115, 22, 0.15)',
+      color: '#0a2f4f',
+      trackColor: 'rgba(10, 47, 79, 0.2)',
     },
     {
       id: 'rep-time',
       label: 'Tempo da coleção',
       percent: Math.round(timePercent * 100),
-      color: '#0ea5e9',
-      trackColor: 'rgba(14, 165, 233, 0.2)',
+      color: '#94a3b8',
+      trackColor: 'rgba(148, 163, 184, 0.25)',
     },
   ];
 
@@ -326,21 +355,14 @@ function RepresentativeHome({ user }) {
         <h1 className="text-3xl font-bold text-slate-900">
           {greeting}, {user?.name?.split(' ')[0] ?? 'representante'}!
         </h1>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-500">
-          {localeTime} · {timeZone || 'Horário local'}
-        </p>
-        <p className="mt-2 text-sm text-slate-500">
-          Faltam {formatCurrency(remaining)} e {daysRemaining} dias para bater a meta desta coleção. Sua meta diária está em{' '}
-          {formatCurrency(Math.max(dailyGoal, 0))}.
-        </p>
 
-        <form onSubmit={handleSearch} className="mt-6 relative flex-1">
+        <form onSubmit={handleSearch} className="relative mt-6 flex-1">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400" aria-hidden>
             🔍
           </span>
           <input
             className="ai-search-input w-full rounded-2xl border border-emerald-200 bg-white px-12 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
-            placeholder="Busque cliente, produto ou ação com IA..."
+            placeholder={placeholderText || IA_PLACEHOLDER_PROMPT}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
@@ -477,7 +499,7 @@ function RepresentativeHome({ user }) {
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
   const capitalizedName = user?.name?.split(' ')[0] ?? 'gestor';
-  const { greeting, localeTime, timeZone } = useLocalizedGreeting();
+  const { greeting } = useLocalizedGreeting();
   const metaPercent = meta?.percent ?? 0;
   const timePct = timePercent ?? 0;
   const managerRings = [
@@ -485,15 +507,15 @@ function ManagerHome({ user }) {
       id: 'mgr-meta',
       label: 'Meta da região',
       percent: Math.round(metaPercent),
-      color: '#f43f5e',
-      trackColor: 'rgba(244, 63, 94, 0.2)',
+      color: '#0a2f4f',
+      trackColor: 'rgba(10, 47, 79, 0.2)',
     },
     {
       id: 'mgr-time',
       label: 'Tempo da coleção',
       percent: Math.round(timePct),
-      color: '#6366f1',
-      trackColor: 'rgba(99, 102, 241, 0.2)',
+      color: '#94a3b8',
+      trackColor: 'rgba(148, 163, 184, 0.25)',
     },
   ];
 
@@ -506,9 +528,6 @@ function ManagerHome({ user }) {
             <h1 className="mt-2 text-3xl font-bold text-slate-900">
               {greeting}, {capitalizedName}!
             </h1>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-500">
-              {localeTime} · {timeZone || 'Horário local'}
-            </p>
             <p className="mt-2 text-sm text-slate-500">
               Meta em {metaPercent}% · faltam {formatCurrency(meta.remaining)} e {meta.daysLeft} dias para fechar.
             </p>
@@ -661,3 +680,5 @@ export default function HomePage() {
   }
   return <RepresentativeHome user={user} />;
 }
+
+
