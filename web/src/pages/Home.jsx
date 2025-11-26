@@ -485,7 +485,7 @@ function RepresentativeHome({ user }) {
             className="rounded-3xl border border-slate-100 bg-white p-5 text-left text-sm font-semibold text-slate-700 shadow hover:border-emerald-200 hover:bg-emerald-50"
           >
             <p className="text-lg" aria-hidden>
-              {shortcut.icon}
+              <shortcut.icon className="h-5 w-5 text-emerald-500" />
             </p>
             <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
             <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
@@ -662,7 +662,7 @@ function ManagerHome({ user }) {
             className="rounded-3xl border border-slate-100 bg-white p-5 text-left text-sm font-semibold text-slate-700 shadow hover:border-indigo-200 hover:bg-indigo-50"
           >
             <p className="text-lg" aria-hidden>
-              {shortcut.icon}
+              <shortcut.icon className="h-5 w-5 text-indigo-500" />
             </p>
             <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
             <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
