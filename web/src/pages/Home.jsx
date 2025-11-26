@@ -362,15 +362,12 @@ function RepresentativeHome({ user }) {
       <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-base font-semibold leading-tight text-slate-800 sm:text-lg">
-              {greeting}, {user?.name?.split(' ')[0] ?? 'representante'}!
+            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500">{greeting}</p>
+            <h1 className="mt-1 text-lg font-semibold leading-snug text-slate-800 sm:text-xl">
+              {user?.name ?? 'Representante Nord'}
             </h1>
           </div>
-          <div className="flex items-center justify-end gap-3">
-            <div className="max-w-[160px] text-right">
-              <p className="text-xs font-semibold leading-snug text-slate-700 break-words">{user?.name ?? 'Representante Nord'}</p>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{user?.region ?? 'Carteira Nord'}</p>
-            </div>
+          <div className="flex items-center justify-end">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-sky-500 text-lg font-semibold text-white">
               {avatarInitials}
             </div>
