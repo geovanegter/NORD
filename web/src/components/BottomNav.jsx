@@ -1,26 +1,27 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { Home, ShoppingBag, Map, GraduationCap, Trophy, UserRound, Users, Route, Joystick } from 'lucide-react';
 
 export default function BottomNav() {
   const { user } = useAuth();
   const isManager = user?.perfil === 'gerente';
 
   const repItems = [
-    { to: '/', label: 'Home', icon: '🏠' },
-    { to: '/clientes', label: 'Clientes', icon: '🧾' },
-    { to: '/roteiro', label: 'Roteiro', icon: '🧭' },
-    { to: '/treinamentos', label: 'Treinos', icon: '🎥' },
-    { to: '/games', label: 'Games', icon: '🏅' },
-    { to: '/perfil', label: 'Perfil', icon: '👤' },
+    { to: '/', label: 'Home', icon: Home },
+    { to: '/clientes', label: 'Clientes', icon: ShoppingBag },
+    { to: '/roteiro', label: 'Roteiro', icon: Map },
+    { to: '/treinamentos', label: 'Treinos', icon: GraduationCap },
+    { to: '/games', label: 'Games', icon: Trophy },
+    { to: '/perfil', label: 'Perfil', icon: UserRound },
   ];
 
   const managerItems = [
-    { to: '/', label: 'Home', icon: '🏠' },
-    { to: '/gerente/representantes', label: 'Reps', icon: '👥' },
-    { to: '/gerente/clientes', label: 'Clientes', icon: '🏢' },
-    { to: '/gerente/roteiro', label: 'Roteiro', icon: '🗺️' },
-    { to: '/gerente/games', label: 'Games', icon: '🏆' },
-    { to: '/perfil', label: 'Perfil', icon: '👤' },
+    { to: '/', label: 'Home', icon: Home },
+    { to: '/gerente/representantes', label: 'Reps', icon: Users },
+    { to: '/gerente/clientes', label: 'Clientes', icon: ShoppingBag },
+    { to: '/gerente/roteiro', label: 'Roteiro', icon: Route },
+    { to: '/gerente/games', label: 'Games', icon: Joystick },
+    { to: '/perfil', label: 'Perfil', icon: UserRound },
   ];
 
   const navItems = isManager ? managerItems : repItems;
@@ -39,7 +40,7 @@ export default function BottomNav() {
             }
           >
             <span className="text-lg" aria-hidden>
-              {item.icon}
+              <item.icon className="h-5 w-5" />
             </span>
             {item.label}
           </NavLink>

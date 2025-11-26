@@ -294,6 +294,14 @@ function RepresentativeHome({ user }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { greeting } = useLocalizedGreeting();
   const [placeholderText, setPlaceholderText] = useState('');
+  const avatarInitials = user?.name
+    ? user.name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join('')
+    : 'NR';
 
   useEffect(() => {
     let index = 0;
@@ -352,23 +360,30 @@ function RepresentativeHome({ user }) {
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-bold text-slate-900">
-          {greeting}, {user?.name?.split(' ')[0] ?? 'representante'}!
-        </h1>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-slate-900">
+              {greeting}, {user?.name?.split(' ')[0] ?? 'representante'}!
+            </h1>
+          </div>
+          <div className="flex items-center justify-end gap-3">
+            <div className="text-right">
+              <p className="text-xs font-semibold text-slate-600">{user?.name ?? 'Representante Nord'}</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400">{user?.region ?? 'Carteira Nord'}</p>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-sky-500 text-lg font-semibold text-white">
+              {avatarInitials}
+            </div>
+          </div>
+        </div>
 
-        <form onSubmit={handleSearch} className="relative mt-6 flex-1">
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400" aria-hidden>
-            🔍
-          </span>
+        <form onSubmit={handleSearch} className="relative mt-5 flex-1">
           <input
-            className="ai-search-input w-full rounded-2xl border border-emerald-200 bg-white px-12 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+            className="ai-search-input w-full rounded-2xl border border-emerald-200 bg-white px-4 pr-24 py-3 text-xs font-medium text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 sm:text-sm"
             placeholder={placeholderText || IA_PLACEHOLDER_PROMPT}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
-          <span className="pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 text-base text-emerald-500" aria-hidden>
-            🤖
-          </span>
           <button
             type="submit"
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-emerald-500 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white shadow"
