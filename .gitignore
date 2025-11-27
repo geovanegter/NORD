@@ -11,3 +11,4 @@ web/.cache/
 
 node_modules/
 node_modules/.cache/
+.env
