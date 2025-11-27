@@ -109,6 +109,74 @@ const weeklyChallenges = [
   },
 ];
 
+const HOME_STYLES = `
+  @keyframes home-panel-in {
+    0% {
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes home-orb {
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-15px) scale(1.02);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .home-shell .home-panel {
+    position: relative;
+    animation: home-panel-in 0.8s ease forwards;
+    animation-delay: var(--delay, 0ms);
+    backdrop-filter: blur(14px);
+    transition: transform 320ms ease, box-shadow 320ms ease, border-color 320ms ease, background 320ms ease;
+  }
+
+  .home-shell .home-panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+    border-color: rgba(16, 185, 129, 0.45);
+  }
+
+  .home-shell .home-glow {
+    animation: home-orb 18s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-shell .home-panel {
+      animation: none;
+      transition: border-color 320ms ease, background 320ms ease;
+    }
+
+    .home-shell .home-glow {
+      animation: none;
+    }
+  }
+`;
+
+function HomeLayout({ children }) {
+  return (
+    <div className="home-shell relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-50 via-blue-50 to-slate-100">
+      <style>{HOME_STYLES}</style>
+      <div className="pointer-events-none absolute inset-0">
+        <div className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl" aria-hidden />
+        <div className="home-glow absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-[160px]" aria-hidden />
+        <div className="home-glow absolute inset-x-1/3 bottom-[-6rem] h-72 w-72 rounded-full bg-blue-400/25 blur-[140px]" aria-hidden />
+      </div>
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">{children}</div>
+    </div>
+  );
+}
+
 const formatCurrency = (value) => `R$ ${value.toLocaleString('pt-BR')}`;
 const IA_PLACEHOLDER_PROMPT = 'Como posso te ajudar a vender mais?';
 
@@ -132,9 +200,12 @@ function useLocalizedGreeting() {
   return info;
 }
 
-function WeeklyChallengesSection() {
+function WeeklyChallengesSection({ style }) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section
+      className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15"
+      style={style}
+    >
       <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
         <span className="mr-1 text-base" aria-hidden>
           📌
@@ -151,13 +222,16 @@ function WeeklyChallengesSection() {
               : `${challenge.current}/${challenge.target}`;
 
           return (
-            <div key={challenge.id} className="rounded-3xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">
+            <div
+              key={challenge.id}
+              className="rounded-3xl border border-white/25 bg-white/70 p-4 text-sm text-slate-700 shadow-sm shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-emerald-200/70"
+            >
               <p className="text-2xl">{challenge.icon}</p>
               <p className="mt-2 text-base font-semibold text-slate-900">{challenge.label}</p>
               <p className="text-xs font-medium text-slate-500">{valueLabel}</p>
-              <div className="mt-3 h-2 rounded-full bg-slate-200" role="presentation">
+              <div className="mt-3 h-2 rounded-full bg-white/50" role="presentation">
                 <div
-                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-sky-500 transition-all duration-500"
                   style={{ width: `${percent}%` }}
                   aria-label={`${percent}% concluído`}
                 />
@@ -260,9 +334,12 @@ function FitnessRingCard({ title, percent, helper, accent = '#10b981', track = '
   );
 }
 
-function StackedRingsCard({ title, helper, rings }) {
+function StackedRingsCard({ title, helper, rings, className = '', style }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div
+      className={`home-panel rounded-3xl border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/20 ${className}`.trim()}
+      style={style}
+    >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
         <div className="relative mx-auto h-40 w-40">
           <StackedRings rings={rings} />
@@ -359,7 +436,10 @@ function RepresentativeHome({ user }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-emerald-100/60 bg-gradient-to-br from-white/85 via-white/60 to-emerald-50/30 p-6 text-slate-800 shadow-xl shadow-emerald-900/15"
+        style={{ '--delay': '40ms' }}
+      >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500">{greeting}</p>
@@ -376,32 +456,34 @@ function RepresentativeHome({ user }) {
 
         <form onSubmit={handleSearch} className="relative mt-5 flex-1">
           <input
-            className="ai-search-input w-full rounded-2xl border border-emerald-200 bg-white px-4 pr-24 py-3 text-xs font-medium text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 sm:text-sm"
+            className="ai-search-input w-full rounded-2xl border border-emerald-200/60 bg-white/75 px-4 pr-28 py-3 text-sm font-medium text-slate-900 shadow-inner shadow-white/60 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/70 focus:ring-offset-2 focus:ring-offset-white/70"
             placeholder={placeholderText || IA_PLACEHOLDER_PROMPT}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
           <button
             type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-emerald-500 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white shadow"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white shadow-lg shadow-emerald-500/40 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           >
             IA
           </button>
         </form>
       </section>
 
-      <section>
-        <StackedRingsCard
-          title=""
-          helper={`Faltam ${formatCurrency(remaining)} em ${daysRemaining} dias\nMeta faltante por dia: ${formatCurrency(
-            Math.max(dailyGoal, 0),
-          )}`}
-          rings={stackedRings}
-        />
-      </section>
-      <WeeklyChallengesSection />
+      <StackedRingsCard
+        title=""
+        helper={`Faltam ${formatCurrency(remaining)} em ${daysRemaining} dias\nMeta faltante por dia: ${formatCurrency(
+          Math.max(dailyGoal, 0),
+        )}`}
+        rings={stackedRings}
+        style={{ '--delay': '120ms' }}
+      />
+      <WeeklyChallengesSection style={{ '--delay': '160ms' }} />
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-white/15 bg-white/75 p-6 shadow-xl shadow-slate-900/15"
+        style={{ '--delay': '200ms' }}
+      >
         <div className="flex items-center justify-between">
           <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
             <span className="mr-1 text-base" aria-hidden>
@@ -409,7 +491,7 @@ function RepresentativeHome({ user }) {
             </span>
             5 principais clientes a atender
           </p>
-          <Link to="/clientes" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+          <Link to="/clientes" className="text-xs font-semibold text-emerald-500 transition hover:text-emerald-400">
             Ver todos
           </Link>
         </div>
@@ -417,7 +499,7 @@ function RepresentativeHome({ user }) {
           {priorityClients.map((client) => (
             <article
               key={client.id}
-              className="flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50 p-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-2 rounded-2xl border border-white/20 bg-white/65 p-4 text-slate-700 shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-1 hover:border-emerald-200/70 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <p className="text-base font-semibold text-slate-900">{client.name}</p>
@@ -430,7 +512,7 @@ function RepresentativeHome({ user }) {
                 <p className="font-semibold text-emerald-600">{client.potential}</p>
                 <Link
                   to={`/clientes?search=${encodeURIComponent(client.search)}`}
-                  className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-slate-900"
+                  className="text-xs font-semibold text-slate-500 underline-offset-2 transition hover:text-slate-900"
                 >
                   ver cliente
                 </Link>
@@ -440,7 +522,10 @@ function RepresentativeHome({ user }) {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-emerald-100/60 bg-gradient-to-br from-emerald-50/60 via-white/60 to-white/30 p-6 shadow-xl shadow-emerald-900/10"
+        style={{ '--delay': '240ms' }}
+      >
         <p className="text-xs uppercase tracking-[0.18em] text-emerald-600">
           <span className="mr-1 text-base" aria-hidden>
             🧠
@@ -450,14 +535,17 @@ function RepresentativeHome({ user }) {
         <p className="mt-1 text-base font-semibold text-slate-900">Para bater a meta mais rápido:</p>
         <ul className="mt-4 space-y-3 text-sm text-slate-600">
           {insights.map((tip) => (
-            <li key={tip} className="rounded-2xl border border-emerald-100 bg-white px-4 py-3 shadow-sm">
+            <li key={tip} className="rounded-2xl border border-emerald-100/70 bg-white/80 px-4 py-3 shadow-sm shadow-slate-900/5">
               {tip}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+      <section
+        className="home-panel border border-amber-200/60 bg-gradient-to-r from-amber-50/70 via-white/55 to-amber-100/40 p-5 shadow-xl shadow-amber-900/15"
+        style={{ '--delay': '280ms' }}
+      >
         <div className="flex items-center gap-3 text-sm text-amber-900">
           <span className="text-2xl" aria-hidden>
             🎮
@@ -468,41 +556,49 @@ function RepresentativeHome({ user }) {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15"
+        style={{ '--delay': '320ms' }}
+      >
         <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
           <span className="mr-1 text-base" aria-hidden>
             🏆
           </span>
           Ranking e orientação
         </p>
-        <div className="mt-3 rounded-2xl bg-slate-50 p-5">
+        <div className="mt-3 rounded-2xl border border-white/20 bg-white/70 p-5 shadow-sm shadow-slate-900/5">
           <p className="text-base font-semibold text-slate-900">
             Você está em {strategyGuide.position}º lugar com {formatCurrency(strategyGuide.value)}
           </p>
           <p className="text-sm text-slate-500">
             {strategyGuide.leader.name} lidera com {formatCurrency(strategyGuide.leader.value)}
           </p>
-          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div className="mt-3 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50/70 via-white/50 to-amber-100/40 px-4 py-3 text-sm text-amber-800 shadow-sm">
             Diferença: faltam {formatCurrency(strategyGuide.nextDiff)} para passar {strategyGuide.nextTarget}.
           </div>
           <p className="mt-3 text-sm font-semibold text-slate-700">{strategyGuide.action}</p>
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {shortcutLinks.map((shortcut) => (
-          <Link
-            key={shortcut.id}
-            to={shortcut.to}
-            className="rounded-3xl border border-slate-100 bg-white p-5 text-left text-sm font-semibold text-slate-700 shadow hover:border-emerald-200 hover:bg-emerald-50"
-          >
-            <p className="text-lg" aria-hidden>
-              <shortcut.icon className="h-5 w-5 text-emerald-500" />
-            </p>
-            <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
-            <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
-          </Link>
-        ))}
+      <section
+        className="home-panel border border-white/10 bg-white/5 p-5 shadow-xl shadow-slate-900/25"
+        style={{ '--delay': '360ms' }}
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {shortcutLinks.map((shortcut) => (
+            <Link
+              key={shortcut.id}
+              to={shortcut.to}
+              className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-emerald-200/70 hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/60"
+            >
+              <p className="text-lg" aria-hidden>
+                <shortcut.icon className="h-5 w-5 text-emerald-500" />
+              </p>
+              <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
+              <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -533,7 +629,10 @@ function ManagerHome({ user }) {
 
   return (
     <div className="space-y-6">
-            <section className="rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-indigo-100/60 bg-gradient-to-br from-white/85 via-white/60 to-indigo-50/30 p-6 shadow-xl shadow-indigo-900/15"
+        style={{ '--delay': '40ms' }}
+      >
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
           <div className="flex-1">
             <p className="text-sm font-medium text-indigo-500">Visão tática - Região {meta.region}</p>
@@ -544,19 +643,19 @@ function ManagerHome({ user }) {
               Meta em {metaPercent}% · faltam {formatCurrency(meta.remaining)} e {meta.daysLeft} dias para fechar.
             </p>
             <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-white/20 bg-white/70 p-4 shadow-sm shadow-slate-900/5">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Falta para meta</p>
                 <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(meta.remaining)}</p>
                 <p className="text-xs text-slate-500">{meta.daysLeft} dias restantes</p>
               </div>
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-white/20 bg-white/70 p-4 shadow-sm shadow-slate-900/5">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Resultado atual</p>
                 <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(meta.actual)}</p>
                 <p className="text-xs text-slate-500">Alvo: {formatCurrency(meta.target)}</p>
               </div>
             </div>
           </div>
-          <div className="w-full rounded-3xl border border-slate-100 bg-slate-50 p-4 lg:w-auto">
+          <div className="w-full rounded-3xl border border-white/20 bg-white/70 p-4 shadow-lg shadow-slate-900/10 lg:w-auto">
             <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">Pulso da coleção</p>
             <div className="relative mx-auto mt-4 h-48 w-48">
               <StackedRings rings={managerRings} size={192} strokeWidth={14} />
@@ -580,43 +679,55 @@ function ManagerHome({ user }) {
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2">
+        <div
+          className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15 md:col-span-2"
+          style={{ '--delay': '120ms' }}
+        >
           <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Top reps e riscos</p>
           <div className="mt-4 space-y-3">
             {topReps.map((rep) => (
               <div
                 key={rep.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm"
+                className="flex items-center justify-between rounded-2xl border border-white/20 bg-white/70 px-4 py-3 text-sm shadow-sm shadow-slate-900/5"
               >
                 <div>
                   <p className="text-base font-semibold text-slate-900">
-                    {rep.name} — {rep.percent}%
+                    {rep.name} - {rep.percent}%
                   </p>
                   <p className="text-xs text-slate-500">{rep.note}</p>
                 </div>
-                <span className="text-sm font-semibold">{rep.status}</span>
+                <span className="text-sm font-semibold text-slate-600">{rep.status}</span>
               </div>
             ))}
           </div>
-          <div className="mt-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-500">
+          <div className="mt-4 rounded-2xl border border-rose-200/70 bg-rose-50/80 px-4 py-3 text-xs font-semibold text-rose-500 shadow-sm">
             Reps em risco: {riskReps.join(', ')}
           </div>
         </div>
-        <div className="rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm">
+        <div
+          className="home-panel border border-emerald-100/60 bg-gradient-to-br from-emerald-50/60 via-white/60 to-white/30 p-6 shadow-xl shadow-emerald-900/10"
+          style={{ '--delay': '160ms' }}
+        >
           <p className="text-xs uppercase tracking-[0.18em] text-emerald-600">Sugestão IA do dia</p>
           <p className="mt-2 text-base font-semibold text-slate-900">{iaSuggestion.highlight}</p>
           <p className="mt-3 text-sm text-slate-600">{iaSuggestion.action}</p>
-          <button className="mt-4 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white">
+          <button className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-slate-900 to-indigo-900 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white shadow-lg shadow-indigo-900/30 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
             Ver reps sugeridos
           </button>
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15"
+        style={{ '--delay': '200ms' }}
+      >
         <p className="text-xs uppercase tracking-[0.18em] text-slate-400">KPIs regionais</p>
         <div className="mt-4 grid gap-4 md:grid-cols-4">
           {regionalKPIs.map((kpi) => (
-            <article key={kpi.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+            <article
+              key={kpi.id}
+              className="rounded-2xl border border-white/20 bg-white/70 px-4 py-3 shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70"
+            >
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{kpi.label}</p>
               <p className="mt-2 text-2xl font-semibold text-slate-900">{kpi.value}</p>
               <p className="text-xs text-slate-500">{kpi.helper}</p>
@@ -626,8 +737,12 @@ function ManagerHome({ user }) {
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        {opportunities.map((item) => (
-          <article key={item.id} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        {opportunities.map((item, index) => (
+          <article
+            key={item.id}
+            className="home-panel border border-white/15 bg-white/80 p-5 shadow-xl shadow-slate-900/10"
+            style={{ '--delay': `${240 + index * 40}ms` }}
+          >
             <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
               <span className="mr-1" aria-hidden>
                 {item.icon}
@@ -639,19 +754,24 @@ function ManagerHome({ user }) {
         ))}
       </section>
 
-      <section className="rounded-3xl border border-rose-100 bg-rose-50/70 p-6 shadow-sm">
+      <section
+        className="home-panel border border-rose-100/70 bg-rose-50/70 p-6 shadow-xl shadow-rose-900/15"
+        style={{ '--delay': '320ms' }}
+      >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-rose-500">Clientes grandes em risco</p>
             <h3 className="text-xl font-semibold text-slate-900">Aja nos próximos 3 dias</h3>
           </div>
-          <button className="rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-500">Ver todos</button>
+          <button className="rounded-full border border-rose-200/70 px-3 py-1 text-xs font-semibold text-rose-500 transition hover:border-rose-300/80">
+            Ver todos
+          </button>
         </div>
         <div className="mt-4 space-y-3">
           {customersInRisk.map((client) => (
             <article
               key={client.id}
-              className="flex flex-col gap-2 rounded-2xl border border-rose-100 bg-white p-4 text-sm text-slate-600 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-2 rounded-2xl border border-rose-100/80 bg-white/80 p-4 text-sm text-slate-600 shadow-sm shadow-rose-900/5 transition duration-300 hover:-translate-y-1 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <p className="text-base font-semibold text-slate-900">{client.name}</p>
@@ -666,20 +786,25 @@ function ManagerHome({ user }) {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {managerShortcuts.map((shortcut) => (
-          <Link
-            key={shortcut.id}
-            to={shortcut.to}
-            className="rounded-3xl border border-slate-100 bg-white p-5 text-left text-sm font-semibold text-slate-700 shadow hover:border-indigo-200 hover:bg-indigo-50"
-          >
-            <p className="text-lg" aria-hidden>
-              <shortcut.icon className="h-5 w-5 text-indigo-500" />
-            </p>
-            <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
-            <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
-          </Link>
-        ))}
+      <section
+        className="home-panel border border-white/10 bg-white/5 p-5 shadow-xl shadow-slate-900/25"
+        style={{ '--delay': '360ms' }}
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {managerShortcuts.map((shortcut) => (
+            <Link
+              key={shortcut.id}
+              to={shortcut.to}
+              className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70 hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
+            >
+              <p className="text-lg" aria-hidden>
+                <shortcut.icon className="h-5 w-5 text-indigo-500" />
+              </p>
+              <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
+              <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -687,10 +812,9 @@ function ManagerHome({ user }) {
 
 export default function HomePage() {
   const { user } = useAuth();
-  if (user?.perfil && user.perfil !== 'representante') {
-    return <ManagerHome user={user} />;
-  }
-  return <RepresentativeHome user={user} />;
+  const isManager = user?.perfil && user.perfil !== 'representante';
+
+  return <HomeLayout>{isManager ? <ManagerHome user={user} /> : <RepresentativeHome user={user} />}</HomeLayout>;
 }
 
 
