@@ -14,10 +14,8 @@ import {
   Joystick,
 } from 'lucide-react';
 
-const gradientOverlay =
-  'linear-gradient(135deg, rgba(6, 18, 40, 0.98) 0%, rgba(7, 52, 115, 0.93) 55%, rgba(7, 97, 171, 0.9) 100%)';
 
-export default function Sidebar({ isDarkMode, onToggleTheme }) {
+export default function Sidebar() {
   const { user } = useAuth();
   const isManager = user?.perfil === 'gerente';
 
@@ -40,24 +38,21 @@ export default function Sidebar({ isDarkMode, onToggleTheme }) {
   ];
 
   const navLinks = isManager ? managerLinks : repLinks;
-  const inactiveLink = isDarkMode ? 'text-white/80 hover:bg-white/10' : 'text-slate-50/90 hover:bg-black/10';
 
   return (
     <aside
-      className="sidebar-quicksand hidden min-h-screen w-64 flex-col justify-between text-white shadow-2xl md:flex"
+      className="hidden min-h-screen w-64 flex-col justify-between text-white md:flex"
       style={{
-        backgroundImage: `${gradientOverlay}, url(${gradientTexture})`,
-        backgroundSize: '220% 220%, cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center top',
-        borderRight: isDarkMode ? '1px solid rgba(15,23,42,0.6)' : '1px solid rgba(15,23,42,0.2)',
+        backgroundColor: '#1c1c1e',
+        borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
       }}
     >
-      <div className="px-6 py-8">
-        <div className="mb-10 flex items-center justify-center">
-          <img src={nordLogo} alt="Nord" className="h-20 w-auto drop-shadow-[0_10px_25px_rgba(0,0,0,0.45)]" />
+      <div className="px-5 py-6">
+        <div className="mb-8 flex items-center justify-center">
+          <img src={nordLogo} alt="Nord" className="h-16 w-auto" />
         </div>
-        <nav className="space-y-2 text-sm font-semibold">
+        <nav className="space-y-1 text-sm font-semibold">
           {navLinks.map((link) => {
             const Icon = link.icon;
             return (
@@ -65,45 +60,29 @@ export default function Sidebar({ isDarkMode, onToggleTheme }) {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-4 py-3 transition ${
-                    isActive ? 'bg-white text-slate-900 shadow' : inactiveLink
+                  `flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                    isActive
+                      ? 'bg-white/10 text-white shadow-lg'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
-                <Icon className="h-4 w-4" />
-                {link.label}
+                <Icon className="h-5 w-5" strokeWidth={2.5} />
+                <span className="font-medium">{link.label}</span>
               </NavLink>
             );
           })}
         </nav>
       </div>
-      <div className="mx-6 mb-8 space-y-4 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm backdrop-blur-md">
+      <div className="mx-5 mb-6 space-y-3 rounded-2xl border border-white/10 p-4 text-sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
         <div>
-          <p className="text-xs uppercase text-white/70">Perfil</p>
-          <p className="text-base font-semibold text-white">{user?.name ?? 'Representante'}</p>
-          <p className="text-xs text-white/70">{user?.region ?? 'Squad Litoral'}</p>
-          <div className="mt-4 rounded-xl bg-white/20 px-3 py-2 text-white">
-            {isManager ? '🚨 Priorize reps em risco hoje.' : '🔥 Foque em clientes quentes hoje.'}
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">Perfil</p>
+          <p className="mt-1 text-base font-semibold text-white">{user?.name ?? 'Representante'}</p>
+          <p className="text-xs text-gray-400">{user?.region ?? 'Squad Litoral'}</p>
+          <div className="mt-3 rounded-xl px-3 py-2 text-xs font-medium text-white" style={{ background: 'linear-gradient(135deg, #fa114f 0%, #92e82a 100%)' }}>
+            {isManager ? 'Priorize reps em risco hoje' : 'Foque em clientes quentes hoje'}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          className="flex w-full items-center justify-between rounded-xl border border-white/30 px-3 py-2 text-xs font-semibold text-white transition hover:border-white"
-        >
-          <span>{isDarkMode ? '☀️ Modo claro' : '🌙 Modo escuro'}</span>
-          <span
-            className={`relative inline-flex h-5 w-10 items-center rounded-full ${
-              isDarkMode ? 'bg-emerald-400' : 'bg-slate-500'
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                isDarkMode ? 'translate-x-5' : 'translate-x-1'
-              }`}
-            />
-          </span>
-        </button>
       </div>
     </aside>
   );

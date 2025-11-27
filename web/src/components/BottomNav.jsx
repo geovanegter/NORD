@@ -27,22 +27,20 @@ export default function BottomNav() {
   const navItems = isManager ? managerItems : repItems;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur md:hidden">
-      <div className="mx-auto flex max-w-2xl items-center justify-around px-2 py-2 text-[11px] font-medium text-slate-500">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 md:hidden" style={{ backgroundColor: 'rgba(28, 28, 30, 0.85)', backdropFilter: 'blur(20px) saturate(180%)' }}>
+      <div className="mx-auto flex max-w-2xl items-center justify-around px-2 py-2 text-[10px] font-medium text-gray-400">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 rounded-2xl px-2 py-2 transition ${
-                isActive ? 'bg-emerald-50 text-emerald-600' : 'text-slate-500'
+              `flex flex-col items-center gap-1.5 rounded-2xl px-3 py-2.5 transition-all duration-200 ${
+                isActive ? 'bg-white/10 text-white' : 'text-gray-400'
               }`
             }
           >
-            <span className="text-lg" aria-hidden>
-              <item.icon className="h-5 w-5" />
-            </span>
-            {item.label}
+            <item.icon className="h-6 w-6" strokeWidth={2.5} />
+            <span className="font-semibold">{item.label}</span>
           </NavLink>
         ))}
       </div>

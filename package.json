@@ -30,7 +30,6 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@expo/webpack-config": "^19.0.1"
+    "@babel/core": "^7.25.2"
   }
 }
