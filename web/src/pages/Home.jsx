@@ -1,26 +1,21 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+﻿import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
-import { myDayStatus, strategyGuide, managerOverview } from '@/data/mockData.js';
+import { myDayStatus, managerOverview } from '@/data/mockData.js';
 import {
   Home as HomeIcon,
   Users,
   MapPinned,
-  GraduationCap,
   Trophy,
   UserRound,
   Route,
   Joystick,
+  Bell,
 } from 'lucide-react';
+import lightningBlue from '@/icons/raio-azul.png';
+import goodEmoji from '@/icons/good-emoji.png';
+import sadEmoji from '@/icons/sad-emoji.png';
 
-const shortcutLinks = [
-  { id: 'home', label: 'Home', to: '/', helper: 'Visão geral do dia', icon: HomeIcon },
-  { id: 'clientes', label: 'Clientes', to: '/clientes', helper: 'IA sugere quem visitar', icon: Users },
-  { id: 'roteiro', label: 'Roteiro', to: '/roteiro', helper: 'Monte o plano da semana', icon: MapPinned },
-  { id: 'treinamentos', label: 'Treinamentos', to: '/treinamentos', helper: 'Cursos rápidos + desafios', icon: GraduationCap },
-  { id: 'games', label: 'Games', to: '/games', helper: '+150 pts hoje', icon: Trophy },
-  { id: 'perfil', label: 'Perfil', to: '/perfil', helper: 'Atualize seu status', icon: UserRound },
-];
 
 const managerShortcuts = [
   { id: 'home', label: 'Home', to: '/', helper: 'Pulso regional', icon: HomeIcon },
@@ -31,53 +26,6 @@ const managerShortcuts = [
   { id: 'perfil', label: 'Perfil', to: '/perfil', helper: 'Configurações rápidas', icon: UserRound },
 ];
 
-const priorityClients = [
-  {
-    id: 'pc1',
-    name: 'Loja da Maria',
-    city: 'Recife',
-    status: '🔥 Alta probabilidade',
-    insight: 'Cliente comprou nesta mesma data no ano passado.',
-    potential: 'R$ 5.200',
-    search: 'Loja da Maria',
-  },
-  {
-    id: 'pc2',
-    name: 'Planeta Kids',
-    city: 'Olinda',
-    status: '⚠️ Queda de 22%',
-    insight: 'Mix comfy zerado, ofereça combos comfy + básicos.',
-    potential: 'R$ 4.000',
-    search: 'Planeta Kids',
-  },
-  {
-    id: 'pc3',
-    name: 'Bela Vista Tecidos',
-    city: 'Recife',
-    status: '🔥 Cliente quente',
-    insight: 'Reposição básica liberada e ticket alto.',
-    potential: 'R$ 4.500',
-    search: 'Bela Vista Tecidos',
-  },
-  {
-    id: 'pc4',
-    name: 'Mundo Kids',
-    city: 'Jaboatão',
-    status: '🧊 Inativo há 60 dias',
-    insight: 'Ative com kits inverno + desconto progressivo.',
-    potential: 'R$ 3.600',
-    search: 'Mundo Kids',
-  },
-  {
-    id: 'pc5',
-    name: 'Casa do Bebê',
-    city: 'Paulista',
-    status: '📍 Próximo de você',
-    insight: 'Linha casual em falta, leve novidades da coleção.',
-    potential: 'R$ 3.100',
-    search: 'Casa do Bebê',
-  },
-];
 
 const weeklyChallenges = [
   {
@@ -110,46 +58,54 @@ const weeklyChallenges = [
 ];
 
 const HOME_STYLES = `
-  @keyframes fitness-fade-in {
+  @keyframes home-panel-in {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(24px) scale(0.98);
     }
     100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 
-  @keyframes fitness-glow {
-    0%, 100% {
-      opacity: 0.4;
-      transform: scale(1) translateY(0);
+  @keyframes home-orb {
+    0% {
+      transform: translateY(0) scale(1);
     }
     50% {
-      opacity: 0.6;
-      transform: scale(1.1) translateY(-10px);
+      transform: translateY(-15px) scale(1.02);
+    }
+    100% {
+      transform: translateY(0) scale(1);
     }
   }
 
-  .fitness-shell .fitness-panel {
-    animation: fitness-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  .home-shell .home-panel {
+    position: relative;
+    animation: home-panel-in 0.8s ease forwards;
     animation-delay: var(--delay, 0ms);
-    opacity: 0;
+    backdrop-filter: blur(14px);
+    transition: transform 320ms ease, box-shadow 320ms ease, border-color 320ms ease, background 320ms ease;
   }
 
-  .fitness-shell .fitness-glow {
-    animation: fitness-glow 20s ease-in-out infinite;
-    will-change: transform, opacity;
+  .home-shell .home-panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+    border-color: rgba(16, 185, 129, 0.45);
+  }
+
+  .home-shell .home-glow {
+    animation: home-orb 18s ease-in-out infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fitness-shell .fitness-panel {
+    .home-shell .home-panel {
       animation: none;
-      opacity: 1;
+      transition: border-color 320ms ease, background 320ms ease;
     }
 
-    .fitness-shell .fitness-glow {
+    .home-shell .home-glow {
       animation: none;
     }
   }
@@ -157,20 +113,19 @@ const HOME_STYLES = `
 
 function HomeLayout({ children }) {
   return (
-    <div className="fitness-shell relative min-h-screen overflow-hidden" style={{ backgroundColor: '#000000' }}>
+    <div className="home-shell relative min-h-screen overflow-hidden bg-gradient-to-br from-[#E9EEF5] to-[#DDE3EB]">
       <style>{HOME_STYLES}</style>
       <div className="pointer-events-none absolute inset-0">
-        <div className="fitness-glow absolute left-[10%] top-[15%] h-[500px] w-[500px] rounded-full opacity-40" style={{ background: 'radial-gradient(circle, rgba(250, 17, 79, 0.25) 0%, transparent 70%)' }} aria-hidden />
-        <div className="fitness-glow absolute right-[15%] top-[40%] h-[600px] w-[600px] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(0, 199, 190, 0.2) 0%, transparent 70%)', animationDelay: '7s' }} aria-hidden />
-        <div className="fitness-glow absolute left-[40%] bottom-[10%] h-[400px] w-[400px] rounded-full opacity-35" style={{ background: 'radial-gradient(circle, rgba(146, 232, 42, 0.18) 0%, transparent 70%)', animationDelay: '14s' }} aria-hidden />
+        <div className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl" aria-hidden />
+        <div className="home-glow absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-[160px]" aria-hidden />
+        <div className="home-glow absolute inset-x-1/3 bottom-[-6rem] h-72 w-72 rounded-full bg-blue-400/25 blur-[140px]" aria-hidden />
       </div>
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">{children}</div>
+      <div className="relative z-10 w-full px-4 py-10 sm:px-6 lg:px-10">{children}</div>
     </div>
   );
 }
 
 const formatCurrency = (value) => `R$ ${value.toLocaleString('pt-BR')}`;
-const IA_PLACEHOLDER_PROMPT = 'Como posso te ajudar a vender mais?';
 
 function useLocalizedGreeting() {
   const [now, setNow] = useState(() => new Date());
@@ -192,50 +147,7 @@ function useLocalizedGreeting() {
   return info;
 }
 
-function WeeklyChallengesSection({ style }) {
-  return (
-    <section
-      className="fitness-panel fitness-card rounded-3xl p-6"
-      style={style}
-    >
-      <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">
-        Desafios da semana
-      </p>
-      <div className="mt-5 grid gap-4 sm:grid-cols-3">
-        {weeklyChallenges.map((challenge) => {
-          const progress = challenge.target ? Math.min(1, challenge.current / challenge.target) : 0;
-          const percent = Math.round(progress * 100);
-          const valueLabel =
-            challenge.type === 'currency'
-              ? `${formatCurrency(challenge.current)} / ${formatCurrency(challenge.target)}`
-              : `${challenge.current}/${challenge.target}`;
-
-          return (
-            <div
-              key={challenge.id}
-              className="fitness-card rounded-2xl p-5"
-            >
-              <p className="text-3xl">{challenge.icon}</p>
-              <p className="mt-3 text-lg font-semibold text-white">{challenge.label}</p>
-              <p className="mt-1 text-sm font-medium text-gray-400">{valueLabel}</p>
-              <div className="mt-4 h-1.5 overflow-hidden rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }} role="presentation">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${percent}%`, background: 'linear-gradient(90deg, #fa114f 0%, #92e82a 100%)' }}
-                  aria-label={`${percent}% concluído`}
-                />
-              </div>
-              <p className="mt-2 text-sm font-bold text-white">{percent}%</p>
-              <p className="mt-1 text-xs text-gray-400">{challenge.helper}</p>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 'rgba(255, 255, 255, 0.15)', delay = 0 }) {
+function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = '#e2e8f0', delay = 0 }) {
   const circumference = 2 * Math.PI * radius;
   const [progress, setProgress] = useState(0);
   const center = size / 2;
@@ -271,11 +183,7 @@ function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         transform={rotation}
-        className="fitness-ring"
-        style={{
-          transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          color: color
-        }}
+        style={{ transition: 'stroke-dashoffset 1s ease' }}
       />
     </>
   );
@@ -304,66 +212,8 @@ function StackedRings({ rings, size = 160, strokeWidth = 12 }) {
   );
 }
 
-function FitnessRingCard({ title, percent, helper, accent = '#10b981', track = '#e2e8f0' }) {
-  const clamped = Math.max(0, Math.min(percent ?? 0, 100));
-  const deg = (clamped / 100) * 360;
-  const gradient = `conic-gradient(${accent} ${deg}deg, ${track} ${deg}deg 360deg)`;
-
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{title}</p>
-      <div className="mt-4 flex items-center gap-4">
-        <div className="relative h-28 w-28">
-          <div className="absolute inset-0 rounded-full" style={{ background: gradient }} />
-          <div className="absolute inset-2 rounded-full bg-white" />
-          <div className="absolute inset-4 flex flex-col items-center justify-center rounded-full bg-white text-center">
-            <p className="text-2xl font-bold text-slate-900">{Math.round(clamped)}%</p>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400">meta</p>
-          </div>
-        </div>
-        <p className="text-sm font-semibold text-slate-600">{helper}</p>
-      </div>
-    </div>
-  );
-}
-
-function StackedRingsCard({ title, helper, rings, className = '', style }) {
-  return (
-    <div
-      className={`fitness-panel fitness-card rounded-3xl p-6 ${className}`.trim()}
-      style={style}
-    >
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-        <div className="relative mx-auto h-52 w-52">
-          <StackedRings rings={rings} size={208} strokeWidth={16} />
-          {title ? (
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400">{title}</p>
-            </div>
-          ) : null}
-        </div>
-        <div className="flex-1 space-y-3 text-sm">
-          {rings.map((ring) => (
-            <div key={ring.id} className="flex items-center gap-3">
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: ring.color, boxShadow: `0 0 12px ${ring.color}` }} />
-              <p className="flex-1 font-semibold text-white">{ring.label}</p>
-              <p className="metric-value text-xl font-bold text-white">{ring.percent}%</p>
-            </div>
-          ))}
-          {helper ? (
-            <p className="pt-4 text-sm font-medium leading-relaxed text-gray-300 whitespace-pre-line">{helper}</p>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function RepresentativeHome({ user }) {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
   const { greeting } = useLocalizedGreeting();
-  const [placeholderText, setPlaceholderText] = useState('');
   const avatarInitials = user?.name
     ? user.name
         .split(' ')
@@ -373,217 +223,187 @@ function RepresentativeHome({ user }) {
         .join('')
     : 'NR';
 
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      index += 1;
-      if (index <= IA_PLACEHOLDER_PROMPT.length) {
-        setPlaceholderText(IA_PLACEHOLDER_PROMPT.slice(0, index));
-      } else {
-        clearInterval(interval);
-      }
-    }, 60);
-    return () => clearInterval(interval);
-  }, []);
-
   const monthTarget = myDayStatus?.monthTarget ?? 0;
   const currentValue = myDayStatus?.current ?? 0;
   const daysElapsed = myDayStatus?.daysElapsed ?? 0;
   const daysTotal = myDayStatus?.daysTotal ?? 1;
   const daysRemaining = myDayStatus?.daysRemaining ?? 0;
-  const baseInsights = myDayStatus?.insights ?? [];
-
   const monthPercent = monthTarget ? Math.min(1, currentValue / monthTarget) : 0;
   const timePercent = daysTotal ? Math.min(1, daysElapsed / daysTotal) : 0;
   const remaining = Math.max(0, monthTarget - currentValue);
   const dailyGoal = daysRemaining > 0 ? Math.ceil(remaining / daysRemaining) : monthTarget / (daysTotal || 1);
 
-  const stackedRings = [
+  const progressRings = [
     {
       id: 'rep-meta',
-      label: 'Meta da coleção',
+      label: 'Meta da colecao',
       percent: Math.round(monthPercent * 100),
-      color: '#fa114f',
-      trackColor: 'rgba(250, 17, 79, 0.2)',
+      color: '#4f75ff',
+      trackColor: 'rgba(79, 117, 255, 0.25)',
     },
     {
       id: 'rep-time',
-      label: 'Tempo da coleção',
+      label: 'Tempo da colecao',
       percent: Math.round(timePercent * 100),
-      color: '#00c7be',
-      trackColor: 'rgba(0, 199, 190, 0.2)',
+      color: '#c7d7ff',
+      trackColor: 'rgba(199, 215, 255, 0.3)',
     },
   ];
 
-  const insights = [
-    'Restam 7 dias para finalizar a campanha de aceleração. Aproveite +2% de comissão e +150 pts nos Games cumprindo a rota IA.',
-    ...baseInsights,
+  const streakDays = myDayStatus?.streakDays ?? 6;
+  const weekLabels = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+  const todayIndex = (() => {
+    const jsDay = new Date().getDay();
+    return jsDay === 0 ? 6 : jsDay - 1;
+  })();
+  const navLinks = [
+    { id: 'home', label: 'Home', to: '/', icon: HomeIcon },
+    { id: 'clientes', label: 'Clientes', to: '/clientes', icon: Users },
+    { id: 'rotas', label: 'Rotas', to: '/roteiro', icon: Route },
+    { id: 'progresso', label: 'Progresso', to: '/games', icon: Trophy },
+    { id: 'perfil', label: 'Perfil', to: '/perfil', icon: UserRound },
   ];
-
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const term = searchTerm.trim();
-    if (!term) return;
-    navigate(`/clientes?search=${encodeURIComponent(term)}`);
-  };
+  const activeNav = 'home';
+  const firstName = user?.name?.split(' ')[0] ?? 'Geovane';
+  const summary = [
+    { id: 'tempo', label: 'Tempo de vendas', value: `${daysElapsed}/${daysTotal} dias` },
+    { id: 'vendas', label: 'Vendas realizadas', value: `${formatCurrency(currentValue)} / ${formatCurrency(monthTarget)}` },
+    { id: 'diaria', label: 'Necessidade diaria', value: formatCurrency(Math.max(dailyGoal, 0)) },
+  ];
+  const challengeList = weeklyChallenges.slice(0, 3);
 
   return (
-    <div className="space-y-5">
-      <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
-        style={{ '--delay': '40ms' }}
-      >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-gray-400">{greeting}</p>
-            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
-              {user?.name ?? 'Representante Nord'}
-            </h1>
+    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800 sm:max-w-[720px] lg:max-w-[900px]">
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-semibold text-[#4D8BFF] shadow">
+            {avatarInitials}
           </div>
-          <div className="flex items-center justify-end">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold text-white" style={{ background: 'linear-gradient(135deg, #fa114f 0%, #92e82a 100%)' }}>
-              {avatarInitials}
+          <div>
+            <p className="text-sm text-slate-500">Boa tarde,</p>
+            <p className="text-xl font-semibold text-slate-900">{firstName}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
+          aria-label="Notificacoes"
+        >
+          <Bell className="h-5 w-5" />
+        </button>
+      </header>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
+          <p className="text-sm font-semibold text-slate-700">Meu progresso</p>
+          <div className="mt-4 flex flex-col items-center gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="relative h-40 w-40 md:h-44 md:w-44">
+              <StackedRings rings={progressRings} size={170} strokeWidth={12} />
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Meta</p>
+                <p className="text-3xl font-bold text-slate-900">{Math.round(monthPercent * 100)}%</p>
+              </div>
+            </div>
+            <dl className="flex-1 space-y-3 text-sm text-slate-600">
+              {summary.map((item) => (
+                <div key={item.id}>
+                  <dt className="text-[13px] text-[#9CA3AF]">{item.label}</dt>
+                  <dd className="text-base font-semibold text-slate-900">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src={lightningBlue} alt="Icone de raio" className="h-16 w-16 object-contain" />
+              <p className="text-sm font-semibold text-slate-700">Streak</p>
+            </div>
+            <p className="text-sm font-semibold text-slate-900">{streakDays} dias seguidos</p>
+          </div>
+          <div className="mt-4 flex items-center gap-4">
+            <div className="hidden md:block" />
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
+              {weekLabels.map((label, index) => {
+                const hasSale = index < streakDays;
+                const isToday = index === todayIndex;
+                const emojiSrc = hasSale ? goodEmoji : sadEmoji;
+                return (
+                  <div key={label} className="flex flex-col items-center gap-1 text-[10px] font-semibold uppercase text-slate-400">
+                    <span
+                      className={`flex h-11 w-11 items-center justify-center rounded-full ${
+                        hasSale ? 'bg-[#E4ECFF]' : 'bg-[#F3F4F6]'
+                      } ${isToday ? 'ring-2 ring-[#4D8BFF]' : ''}`}
+                    >
+                      <img src={emojiSrc} alt={hasSale ? 'dia com venda' : 'dia sem venda'} className="h-7 w-7 object-contain" />
+                    </span>
+                    {label}
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <form onSubmit={handleSearch} className="relative mt-6 flex-1">
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 pr-28 py-4 text-sm font-medium text-white placeholder-gray-400 outline-none backdrop-blur-xl transition focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-white/20"
-            placeholder={placeholderText || IA_PLACEHOLDER_PROMPT}
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
-          <button
-            type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white px-5 py-2 text-xs font-bold uppercase tracking-widest text-black transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-          >
-            IA
-          </button>
-        </form>
+      <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
+        <p className="text-sm font-semibold text-slate-700">Desafios da semana</p>
+        <div className="mt-4 space-y-3">
+          {challengeList.map((challenge) => {
+            const progress = challenge.target ? Math.min(1, challenge.current / challenge.target) : 0;
+            const percent = Math.round(progress * 100);
+            const valueLabel =
+              challenge.type === 'currency'
+                ? `${formatCurrency(challenge.current)} / ${formatCurrency(challenge.target)}`
+                : `${challenge.current}/${challenge.target}`;
+
+            return (
+              <article key={challenge.id} className="rounded-2xl border border-[#F3F4F6] bg-white/95 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-slate-400">
+                    <UserRound className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{challenge.label}</p>
+                    <p className="text-xs text-slate-500">{valueLabel}</p>
+                  </div>
+                </div>
+                <div className="mt-3 h-2 rounded-full bg-[#E5E7EB]" role="presentation">
+                  <div
+                    className="h-full rounded-full bg-[#4D8BFF]"
+                    style={{ width: `${percent}%` }}
+                    aria-label={`${percent}% concluido`}
+                  />
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </section>
 
-      <StackedRingsCard
-        title=""
-        helper={`Faltam ${formatCurrency(remaining)} em ${daysRemaining} dias\nMeta faltante por dia: ${formatCurrency(
-          Math.max(dailyGoal, 0),
-        )}`}
-        rings={stackedRings}
-        style={{ '--delay': '120ms' }}
-      />
-      <WeeklyChallengesSection style={{ '--delay': '160ms' }} />
-
-      <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
-        style={{ '--delay': '200ms' }}
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">
-            5 principais clientes a atender
-          </p>
-          <Link to="/clientes" className="text-xs font-semibold text-white transition hover:text-gray-300">
-            Ver todos
-          </Link>
-        </div>
-        <div className="mt-5 space-y-3">
-          {priorityClients.map((client) => (
-            <article
-              key={client.id}
-              className="fitness-card rounded-2xl p-4 md:flex md:items-center md:justify-between md:gap-4"
-            >
-              <div className="flex-1">
-                <p className="text-base font-semibold text-white">{client.name}</p>
-                <p className="mt-1 text-sm text-gray-300">
-                  {client.city} · {client.status}
-                </p>
-                <p className="mt-1 text-xs text-gray-400">{client.insight}</p>
-              </div>
-              <div className="mt-3 text-left md:mt-0 md:text-right">
-                <p className="text-lg font-bold" style={{ color: '#92e82a' }}>{client.potential}</p>
+      <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30">
+        <ul className="flex items-center justify-between text-xs font-semibold">
+          {navLinks.map((nav) => {
+            const isActive = nav.id === activeNav;
+            return (
+              <li key={nav.id}>
                 <Link
-                  to={`/clientes?search=${encodeURIComponent(client.search)}`}
-                  className="text-xs font-semibold text-gray-400 transition hover:text-white"
+                  to={nav.to}
+                  className={`flex flex-col items-center gap-1 transition ${isActive ? 'text-[#4D8BFF]' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  ver cliente
+                  <nav.icon className="h-5 w-5" />
+                  <span>{nav.label}</span>
                 </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
-        style={{ '--delay': '240ms' }}
-      >
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em]" style={{ color: '#92e82a' }}>
-          Insights da IA
-        </p>
-        <p className="mt-2 text-lg font-semibold text-white">Para bater a meta mais rápido:</p>
-        <ul className="mt-4 space-y-3 text-sm text-gray-300">
-          {insights.map((tip) => (
-            <li key={tip} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm">
-              {tip}
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
-      </section>
-
-      <section
-        className="fitness-panel fitness-card rounded-3xl p-5"
-        style={{ '--delay': '280ms' }}
-      >
-        <div className="flex items-center gap-3 text-sm">
-          <span className="text-3xl" aria-hidden>
-            🎮
-          </span>
-          <p className="text-gray-300">
-            Complete o desafio de visitas IA hoje e ganhe +150 pts nos Games. Falta {formatCurrency(remaining)} para chegar a 100%.
-          </p>
-        </div>
-      </section>
-
-      <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
-        style={{ '--delay': '320ms' }}
-      >
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">
-          Ranking e orientação
-        </p>
-        <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-          <p className="text-base font-semibold text-white">
-            Você está em {strategyGuide.position}º lugar com {formatCurrency(strategyGuide.value)}
-          </p>
-          <p className="mt-2 text-sm text-gray-300">
-            {strategyGuide.leader.name} lidera com {formatCurrency(strategyGuide.leader.value)}
-          </p>
-          <div className="mt-4 rounded-xl border border-white/10 px-4 py-3 text-sm" style={{ backgroundColor: 'rgba(250, 17, 79, 0.15)', color: '#fa114f' }}>
-            Diferença: faltam {formatCurrency(strategyGuide.nextDiff)} para passar {strategyGuide.nextTarget}.
-          </div>
-          <p className="mt-3 text-sm font-semibold text-gray-300">{strategyGuide.action}</p>
-        </div>
-      </section>
-
-      <section
-        className="fitness-panel grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        style={{ '--delay': '360ms' }}
-      >
-        {shortcutLinks.map((shortcut) => (
-          <Link
-            key={shortcut.id}
-            to={shortcut.to}
-            className="fitness-card rounded-3xl p-5 text-left transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-          >
-            <shortcut.icon className="h-6 w-6" style={{ color: '#92e82a' }} />
-            <p className="mt-3 text-base font-semibold text-white">{shortcut.label}</p>
-            <p className="mt-1 text-xs font-normal text-gray-400">{shortcut.helper}</p>
-          </Link>
-        ))}
-      </section>
+      </nav>
     </div>
   );
 }
-
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
   const capitalizedName = user?.name?.split(' ')[0] ?? 'gestor';
@@ -595,62 +415,62 @@ function ManagerHome({ user }) {
       id: 'mgr-meta',
       label: 'Meta da região',
       percent: Math.round(metaPercent),
-      color: '#fa114f',
-      trackColor: 'rgba(250, 17, 79, 0.2)',
+      color: '#0a2f4f',
+      trackColor: 'rgba(10, 47, 79, 0.2)',
     },
     {
       id: 'mgr-time',
       label: 'Tempo da coleção',
       percent: Math.round(timePct),
-      color: '#00c7be',
-      trackColor: 'rgba(0, 199, 190, 0.2)',
+      color: '#94a3b8',
+      trackColor: 'rgba(148, 163, 184, 0.25)',
     },
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
+        className="home-panel border border-indigo-100/60 bg-gradient-to-br from-white/85 via-white/60 to-indigo-50/30 p-6 shadow-xl shadow-indigo-900/15"
         style={{ '--delay': '40ms' }}
       >
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
           <div className="flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em]" style={{ color: '#fa114f' }}>Visão tática - Região {meta.region}</p>
-            <h1 className="mt-2 text-3xl font-bold text-white">
+            <p className="text-sm font-medium text-indigo-500">Visão tática - Região {meta.region}</p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">
               {greeting}, {capitalizedName}!
             </h1>
-            <p className="mt-2 text-sm text-gray-300">
+            <p className="mt-2 text-sm text-slate-500">
               Meta em {metaPercent}% · faltam {formatCurrency(meta.remaining)} e {meta.daysLeft} dias para fechar.
             </p>
             <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Falta para meta</p>
-                <p className="mt-1 text-2xl font-semibold text-white">{formatCurrency(meta.remaining)}</p>
-                <p className="text-xs text-gray-400">{meta.daysLeft} dias restantes</p>
+              <div className="rounded-2xl border border-white/20 bg-white/70 p-4 shadow-sm shadow-slate-900/5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Falta para meta</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(meta.remaining)}</p>
+                <p className="text-xs text-slate-500">{meta.daysLeft} dias restantes</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Resultado atual</p>
-                <p className="mt-1 text-2xl font-semibold text-white">{formatCurrency(meta.actual)}</p>
-                <p className="text-xs text-gray-400">Alvo: {formatCurrency(meta.target)}</p>
+              <div className="rounded-2xl border border-white/20 bg-white/70 p-4 shadow-sm shadow-slate-900/5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Resultado atual</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(meta.actual)}</p>
+                <p className="text-xs text-slate-500">Alvo: {formatCurrency(meta.target)}</p>
               </div>
             </div>
           </div>
-          <div className="w-full fitness-card rounded-3xl p-5 lg:w-auto">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400">Pulso da coleção</p>
-            <div className="relative mx-auto mt-4 h-52 w-52">
-              <StackedRings rings={managerRings} size={208} strokeWidth={16} />
+          <div className="w-full rounded-3xl border border-white/20 bg-white/70 p-4 shadow-lg shadow-slate-900/10 lg:w-auto">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">Pulso da coleção</p>
+            <div className="relative mx-auto mt-4 h-48 w-48">
+              <StackedRings rings={managerRings} size={192} strokeWidth={14} />
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Região</p>
-                <p className="text-3xl font-bold text-white">{Math.round(metaPercent)}%</p>
-                <p className="text-xs text-gray-400">Meta atingida</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Região</p>
+                <p className="text-2xl font-bold text-slate-900">{Math.round(metaPercent)}%</p>
+                <p className="text-xs text-slate-500">Meta atingida</p>
               </div>
             </div>
-            <div className="mt-4 space-y-2 text-sm">
+            <div className="mt-4 space-y-1 text-sm">
               {managerRings.map((ring) => (
-                <div key={ring.id} className="flex items-center gap-3">
-                  <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: ring.color, boxShadow: `0 0 12px ${ring.color}` }} />
-                  <p className="flex-1 font-semibold text-white">{ring.label}</p>
-                  <p className="text-lg font-bold text-white">{ring.percent}%</p>
+                <div key={ring.id} className="flex items-center gap-2">
+                  <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: ring.color }} />
+                  <p className="font-semibold text-slate-900">{ring.label}</p>
+                  <p className="text-slate-500">{ring.percent}%</p>
                 </div>
               ))}
             </div>
@@ -660,57 +480,57 @@ function ManagerHome({ user }) {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div
-          className="fitness-panel fitness-card rounded-3xl p-6 md:col-span-2"
+          className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15 md:col-span-2"
           style={{ '--delay': '120ms' }}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">Top reps e riscos</p>
-          <div className="mt-5 space-y-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Top reps e riscos</p>
+          <div className="mt-4 space-y-3">
             {topReps.map((rep) => (
               <div
                 key={rep.id}
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm backdrop-blur-sm"
+                className="flex items-center justify-between rounded-2xl border border-white/20 bg-white/70 px-4 py-3 text-sm shadow-sm shadow-slate-900/5"
               >
                 <div>
-                  <p className="text-base font-semibold text-white">
+                  <p className="text-base font-semibold text-slate-900">
                     {rep.name} - {rep.percent}%
                   </p>
-                  <p className="text-xs text-gray-400">{rep.note}</p>
+                  <p className="text-xs text-slate-500">{rep.note}</p>
                 </div>
-                <span className="text-sm font-semibold text-gray-300">{rep.status}</span>
+                <span className="text-sm font-semibold text-slate-600">{rep.status}</span>
               </div>
             ))}
           </div>
-          <div className="mt-4 rounded-2xl border border-white/10 px-4 py-3 text-xs font-semibold" style={{ backgroundColor: 'rgba(250, 17, 79, 0.15)', color: '#fa114f' }}>
+          <div className="mt-4 rounded-2xl border border-rose-200/70 bg-rose-50/80 px-4 py-3 text-xs font-semibold text-rose-500 shadow-sm">
             Reps em risco: {riskReps.join(', ')}
           </div>
         </div>
         <div
-          className="fitness-panel fitness-card rounded-3xl p-6"
+          className="home-panel border border-emerald-100/60 bg-gradient-to-br from-emerald-50/60 via-white/60 to-white/30 p-6 shadow-xl shadow-emerald-900/10"
           style={{ '--delay': '160ms' }}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em]" style={{ color: '#92e82a' }}>Sugestão IA do dia</p>
-          <p className="mt-3 text-base font-semibold text-white">{iaSuggestion.highlight}</p>
-          <p className="mt-3 text-sm text-gray-300">{iaSuggestion.action}</p>
-          <button className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-black transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+          <p className="text-xs uppercase tracking-[0.18em] text-emerald-600">Sugestão IA do dia</p>
+          <p className="mt-2 text-base font-semibold text-slate-900">{iaSuggestion.highlight}</p>
+          <p className="mt-3 text-sm text-slate-600">{iaSuggestion.action}</p>
+          <button className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-slate-900 to-indigo-900 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white shadow-lg shadow-indigo-900/30 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
             Ver reps sugeridos
           </button>
         </div>
       </section>
 
       <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
+        className="home-panel border border-white/15 bg-white/80 p-6 shadow-xl shadow-slate-900/15"
         style={{ '--delay': '200ms' }}
       >
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">KPIs regionais</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-4">
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-400">KPIs regionais</p>
+        <div className="mt-4 grid gap-4 md:grid-cols-4">
           {regionalKPIs.map((kpi) => (
             <article
               key={kpi.id}
-              className="fitness-card rounded-2xl px-4 py-4"
+              className="rounded-2xl border border-white/20 bg-white/70 px-4 py-3 shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">{kpi.label}</p>
-              <p className="metric-value mt-2 text-2xl font-bold text-white">{kpi.value}</p>
-              <p className="text-xs text-gray-400">{kpi.helper}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{kpi.label}</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{kpi.value}</p>
+              <p className="text-xs text-slate-500">{kpi.helper}</p>
             </article>
           ))}
         </div>
@@ -720,67 +540,71 @@ function ManagerHome({ user }) {
         {opportunities.map((item, index) => (
           <article
             key={item.id}
-            className="fitness-panel fitness-card rounded-3xl p-5"
+            className="home-panel border border-white/15 bg-white/80 p-5 shadow-xl shadow-slate-900/10"
             style={{ '--delay': `${240 + index * 40}ms` }}
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">
-              <span className="mr-1 text-base" aria-hidden>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+              <span className="mr-1" aria-hidden>
                 {item.icon}
               </span>
               {item.title}
             </p>
-            <p className="mt-3 text-base font-semibold text-white">{item.detail}</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">{item.detail}</p>
           </article>
         ))}
       </section>
 
       <section
-        className="fitness-panel fitness-card rounded-3xl p-6"
-        style={{ '--delay': '320ms', backgroundColor: 'rgba(250, 17, 79, 0.08)' }}
+        className="home-panel border border-rose-100/70 bg-rose-50/70 p-6 shadow-xl shadow-rose-900/15"
+        style={{ '--delay': '320ms' }}
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em]" style={{ color: '#fa114f' }}>Clientes grandes em risco</p>
-            <h3 className="mt-1 text-xl font-semibold text-white">Aja nos próximos 3 dias</h3>
+            <p className="text-xs uppercase tracking-[0.18em] text-rose-500">Clientes grandes em risco</p>
+            <h3 className="text-xl font-semibold text-slate-900">Aja nos próximos 3 dias</h3>
           </div>
-          <button className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-white/10">
+          <button className="rounded-full border border-rose-200/70 px-3 py-1 text-xs font-semibold text-rose-500 transition hover:border-rose-300/80">
             Ver todos
           </button>
         </div>
-        <div className="mt-5 space-y-3">
+        <div className="mt-4 space-y-3">
           {customersInRisk.map((client) => (
             <article
               key={client.id}
-              className="fitness-card rounded-2xl p-4 md:flex md:items-center md:justify-between md:gap-4"
+              className="flex flex-col gap-2 rounded-2xl border border-rose-100/80 bg-white/80 p-4 text-sm text-slate-600 shadow-sm shadow-rose-900/5 transition duration-300 hover:-translate-y-1 md:flex-row md:items-center md:justify-between"
             >
-              <div className="flex-1">
-                <p className="text-base font-semibold text-white">{client.name}</p>
-                <p className="mt-1 text-xs text-gray-300">
+              <div>
+                <p className="text-base font-semibold text-slate-900">{client.name}</p>
+                <p className="text-xs text-slate-500">
                   {client.value} · Última compra: {client.lastPurchase}
                 </p>
-                <p className="text-xs text-gray-400">Rep: {client.rep}</p>
+                <p className="text-xs text-slate-500">Rep: {client.rep}</p>
               </div>
-              <div className="mt-2 text-left text-sm font-semibold md:mt-0 md:text-right" style={{ color: '#fa114f' }}>{client.status}</div>
+              <div className="text-right text-sm font-semibold text-rose-500">{client.status}</div>
             </article>
           ))}
         </div>
       </section>
 
       <section
-        className="fitness-panel grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="home-panel border border-white/10 bg-white/5 p-5 shadow-xl shadow-slate-900/25"
         style={{ '--delay': '360ms' }}
       >
-        {managerShortcuts.map((shortcut) => (
-          <Link
-            key={shortcut.id}
-            to={shortcut.to}
-            className="fitness-card rounded-3xl p-5 text-left transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-          >
-            <shortcut.icon className="h-6 w-6" style={{ color: '#fa114f' }} />
-            <p className="mt-3 text-base font-semibold text-white">{shortcut.label}</p>
-            <p className="mt-1 text-xs font-normal text-gray-400">{shortcut.helper}</p>
-          </Link>
-        ))}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {managerShortcuts.map((shortcut) => (
+            <Link
+              key={shortcut.id}
+              to={shortcut.to}
+              className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70 hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
+            >
+              <p className="text-lg" aria-hidden>
+                <shortcut.icon className="h-5 w-5 text-indigo-500" />
+              </p>
+              <p className="mt-2 text-base text-slate-900">{shortcut.label}</p>
+              <p className="text-xs font-normal text-slate-500">{shortcut.helper}</p>
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );
