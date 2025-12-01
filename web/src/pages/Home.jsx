@@ -118,7 +118,7 @@ const HOME_STYLES = `
 
 function HomeLayout({ children }) {
   return (
-    <div className="home-shell relative min-h-screen overflow-hidden bg-gradient-to-br from-[#E9EEF5] to-[#DDE3EB]">
+    <div className="home-shell relative min-h-screen overflow-hidden bg-gradient-to-br from-[#020617] to-[#DDE3EB]">
       <style>{HOME_STYLES}</style>
       <div className="pointer-events-none absolute inset-0">
         <div className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl" aria-hidden />
@@ -269,7 +269,7 @@ function RepresentativeHome({ user }) {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[640px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800 sm:max-w-[768px] lg:max-w-[900px]">
+    <div className="mx-auto flex w-full max-w-[640px] sm:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1200px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800">
       {/* Header */}
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
