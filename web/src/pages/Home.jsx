@@ -347,14 +347,14 @@ function RepresentativeHome({ user }) {
 
         <p className="text-xs text-slate-500 mb-4">dias seguidos</p>
 
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {weekLabels.map((label, index) => {
             const hasSale = index < streakDays % 7;
             const isToday = index === todayIndex;
             const emojiSrc = hasSale ? goodEmoji : sadEmoji;
 
             return (
-              <div key={label} className="flex flex-col items-center gap-1">
+              <div key={label} className="flex flex-col items-center gap-1 w-[13%] sm:w-auto">
                 <span
                   className={`flex h-10 w-10 items-center justify-center rounded-full ${
                     hasSale ? 'bg-blue-100' : 'bg-gray-100'
