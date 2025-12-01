@@ -417,7 +417,7 @@ function RepresentativeHome({ user }) {
       </section>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30 md:hidden"">
+      <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30 md:hidden">
         <ul className="flex items-center justify-between text-xs font-semibold">
           {navLinks.map((nav) => {
             const isActive = nav.id === 'home';
