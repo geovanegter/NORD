@@ -302,72 +302,109 @@ function RepresentativeHome({ user }) {
         />
       </div>
 
-      {/* Meta Card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
-        <div className="mb-4">
-          <p className="text-sm font-semibold text-slate-700">Tempo de vendas</p>
-          <p className="text-xs text-slate-500 mt-1">{daysElapsed}/{daysTotal} dias</p>
-        </div>
-
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          {/* Donut Chart */}
-          <div className="relative h-40 w-40">
-            <DonutChart size={160} strokeWidth={14} innerPercent={60} outerPercent={metaPercent} />
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="text-2xl font-bold text-slate-900">{Math.round(metaPercent)}%</p>
-              <p className="text-[10px] uppercase tracking-wider text-slate-400">Meta</p>
-            </div>
+      {/* Bloco principal: Meta + Streak */}
+      <div className="grid gap-5 lg:grid-cols-2 items-stretch">
+        {/* Meta Card */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
+          <div className="mb-4">
+            <p className="text-sm font-semibold text-slate-700">Tempo de vendas</p>
+            <p className="text-xs text-slate-500 mt-1">
+              {daysElapsed}/{daysTotal} dias
+            </p>
           </div>
 
-          {/* Text Summary */}
-          <div className="flex-1 space-y-4">
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Vendas realizadas</p>
-              <p className="text-base font-bold text-slate-900">{formatCurrency(currentValue)}</p>
-              <p className="text-xs text-slate-500 mt-1">Meta: {formatCurrency(monthTarget)}</p>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Necessidade diária</p>
-              <p className="text-base font-bold text-slate-900">{formatCurrency(Math.max(dailyGoal, 0))}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Streak Card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <img src={lightningBlue} alt="Streak icon" className="h-8 w-8 object-contain" />
-            <p className="text-sm font-semibold text-slate-700">Streak</p>
-          </div>
-          <p className="text-2xl font-bold text-slate-900">{streakDays}</p>
-        </div>
-
-        <p className="text-xs text-slate-500 mb-4">dias seguidos</p>
-
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {weekLabels.map((label, index) => {
-            const hasSale = index < streakDays % 7;
-            const isToday = index === todayIndex;
-            const emojiSrc = hasSale ? goodEmoji : sadEmoji;
-
-            return (
-              <div key={label} className="flex flex-col items-center gap-1 w-[13%] sm:w-auto">
-                <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    hasSale ? 'bg-blue-100' : 'bg-gray-100'
-                  } ${isToday ? 'ring-2 ring-[#4D8BFF]' : ''}`}
-                >
-                  <img src={emojiSrc} alt={hasSale ? 'dia com venda' : 'dia sem venda'} className="h-6 w-6 object-contain" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase text-slate-500">{label}</p>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            {/* Donut Chart */}
+            <div className="relative h-40 w-40 mx-auto md:mx-0">
+              <DonutChart
+                size={160}
+                strokeWidth={14}
+                innerPercent={60}
+                outerPercent={metaPercent}
+              />
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+                <p className="text-2xl font-bold text-slate-900">
+                  {Math.round(metaPercent)}%
+                </p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-400">
+                  Meta
+                </p>
               </div>
-            );
-          })}
-        </div>
-      </section>
+            </div>
+
+            {/* Text Summary */}
+            <div className="flex-1 space-y-4 mt-2 md:mt-0">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Vendas realizadas
+                </p>
+                <p className="text-base font-bold text-slate-900">
+                  {formatCurrency(currentValue)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Meta: {formatCurrency(monthTarget)}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Necessidade diária
+                </p>
+                <p className="text-base font-bold text-slate-900">
+                  {formatCurrency(Math.max(dailyGoal, 0))}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Streak Card */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <img
+                src={lightningBlue}
+                alt="Streak icon"
+                className="h-8 w-8 object-contain"
+              />
+              <p className="text-sm font-semibold text-slate-700">Streak</p>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{streakDays}</p>
+          </div>
+
+          <p className="text-xs text-slate-500 mb-4">dias seguidos</p>
+
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+            {weekLabels.map((label, index) => {
+              const hasSale = index < streakDays % 7;
+              const isToday = index === todayIndex;
+              const emojiSrc = hasSale ? goodEmoji : sadEmoji;
+
+              return (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-1 w-[13%] sm:w-auto"
+                >
+                  <span
+                    className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full ${
+                      hasSale ? 'bg-blue-100' : 'bg-gray-100'
+                    } ${isToday ? 'ring-2 ring-[#4D8BFF]' : ''}`}
+                  >
+                    <img
+                      src={emojiSrc}
+                      alt={hasSale ? 'dia com venda' : 'dia sem venda'}
+                      className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
+                    />
+                  </span>
+                  <p className="text-[9px] sm:text-[10px] font-semibold uppercase text-slate-500">
+                    {label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </div>
 
       {/* Weekly Challenges Card */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
