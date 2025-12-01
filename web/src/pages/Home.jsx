@@ -269,7 +269,7 @@ function RepresentativeHome({ user }) {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800 sm:max-w-[720px] lg:max-w-[900px]">
+    <div className="mx-auto flex w-full max-w-[640px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800 sm:max-w-[768px] lg:max-w-[900px]">
       {/* Header */}
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
