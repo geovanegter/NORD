@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { myDayStatus, managerOverview } from '@/data/mockData.js';
@@ -11,11 +11,11 @@ import {
   Route,
   Joystick,
   Bell,
+  Search,
 } from 'lucide-react';
 import lightningBlue from '@/icons/raio-azul.png';
 import goodEmoji from '@/icons/good-emoji.png';
 import sadEmoji from '@/icons/sad-emoji.png';
-
 
 const managerShortcuts = [
   { id: 'home', label: 'Home', to: '/', helper: 'Pulso regional', icon: HomeIcon },
@@ -26,34 +26,39 @@ const managerShortcuts = [
   { id: 'perfil', label: 'Perfil', to: '/perfil', helper: 'Configurações rápidas', icon: UserRound },
 ];
 
-
 const weeklyChallenges = [
   {
     id: 'positivar',
     icon: '✅',
     label: 'Positivar 5 clientes',
-    current: 3,
+    current: 5,
     target: 5,
-    helper: 'Faltam 2 clientes para concluir.',
+    helper: '5/5 clientes atendidos',
     type: 'count',
+    color: '#10b981', // Verde
+    bgColor: '#d1fae5',
   },
   {
-    id: 'weekly-sales',
-    icon: '💰',
-    label: 'Venda semanal',
-    current: 18500,
-    target: 30000,
-    helper: 'Acelere combos comfy e ganhe +2% da campanha.',
-    type: 'currency',
-  },
-  {
-    id: 'new-clients',
+    id: 'abrir-clientes',
     icon: '🆕',
-    label: 'Abrir novos clientes',
+    label: 'Abrir 3 clientes',
     current: 1,
     target: 3,
-    helper: 'Use leads IA para ativar novos pontos.',
+    helper: '1/3 clientes atendidos',
     type: 'count',
+    color: '#3b82f6', // Azul
+    bgColor: '#dbeafe',
+  },
+  {
+    id: 'cidades',
+    icon: '🏙️',
+    label: 'Positivar 5 cidades',
+    current: 2,
+    target: 5,
+    helper: '2/5 cidades atendidas',
+    type: 'count',
+    color: '#a855f7', // Roxo
+    bgColor: '#f3e8ff',
   },
 ];
 
@@ -138,10 +143,7 @@ function useLocalizedGreeting() {
   const info = useMemo(() => {
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
-    const localeTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const tzRaw = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
-    const timeZone = tzRaw.replace('_', ' ');
-    return { greeting, localeTime, timeZone };
+    return { greeting };
   }, [now]);
 
   return info;
@@ -189,31 +191,41 @@ function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 
   );
 }
 
-function StackedRings({ rings, size = 160, strokeWidth = 12 }) {
+function DonutChart({ size = 160, strokeWidth = 14, innerPercent = 60, outerPercent = 40 }) {
   const center = size / 2;
+  const outerRadius = center - strokeWidth / 2;
+  const innerRadius = outerRadius - strokeWidth - 8;
+
   return (
     <svg width={size} height={size}>
-      {rings.map((ring, index) => {
-        const radius = center - strokeWidth / 2 - index * (strokeWidth + 8);
-        return (
-          <AnimatedRing
-            key={ring.id}
-            size={size}
-            radius={radius}
-            strokeWidth={strokeWidth}
-            percent={ring.percent}
-            color={ring.color}
-            trackColor={ring.trackColor}
-            delay={index * 150}
-          />
-        );
-      })}
+      {/* Outer ring (blue - progress) */}
+      <AnimatedRing
+        size={size}
+        radius={outerRadius}
+        strokeWidth={strokeWidth}
+        percent={outerPercent}
+        color="#3b82f6"
+        trackColor="rgba(59, 130, 246, 0.15)"
+        delay={0}
+      />
+      {/* Inner ring (orange - remaining) */}
+      <AnimatedRing
+        size={size}
+        radius={innerRadius}
+        strokeWidth={strokeWidth}
+        percent={innerPercent}
+        color="#f97316"
+        trackColor="rgba(249, 115, 22, 0.15)"
+        delay={150}
+      />
     </svg>
   );
 }
 
 function RepresentativeHome({ user }) {
   const { greeting } = useLocalizedGreeting();
+  const [searchQuery, setSearchQuery] = useState('');
+
   const avatarInitials = user?.name
     ? user.name
         .split(' ')
@@ -223,39 +235,23 @@ function RepresentativeHome({ user }) {
         .join('')
     : 'NR';
 
-  const monthTarget = myDayStatus?.monthTarget ?? 0;
-  const currentValue = myDayStatus?.current ?? 0;
-  const daysElapsed = myDayStatus?.daysElapsed ?? 0;
-  const daysTotal = myDayStatus?.daysTotal ?? 1;
-  const daysRemaining = myDayStatus?.daysRemaining ?? 0;
-  const monthPercent = monthTarget ? Math.min(1, currentValue / monthTarget) : 0;
-  const timePercent = daysTotal ? Math.min(1, daysElapsed / daysTotal) : 0;
+  const monthTarget = myDayStatus?.monthTarget ?? 500000;
+  const currentValue = myDayStatus?.current ?? 200000;
+  const daysElapsed = myDayStatus?.daysElapsed ?? 30;
+  const daysTotal = myDayStatus?.daysTotal ?? 90;
+  const daysRemaining = myDayStatus?.daysRemaining ?? 60;
+  
+  const metaPercent = monthTarget ? Math.min(100, (currentValue / monthTarget) * 100) : 0;
   const remaining = Math.max(0, monthTarget - currentValue);
   const dailyGoal = daysRemaining > 0 ? Math.ceil(remaining / daysRemaining) : monthTarget / (daysTotal || 1);
 
-  const progressRings = [
-    {
-      id: 'rep-meta',
-      label: 'Meta da colecao',
-      percent: Math.round(monthPercent * 100),
-      color: '#4f75ff',
-      trackColor: 'rgba(79, 117, 255, 0.25)',
-    },
-    {
-      id: 'rep-time',
-      label: 'Tempo da colecao',
-      percent: Math.round(timePercent * 100),
-      color: '#c7d7ff',
-      trackColor: 'rgba(199, 215, 255, 0.3)',
-    },
-  ];
-
-  const streakDays = myDayStatus?.streakDays ?? 6;
+  const streakDays = myDayStatus?.streakDays ?? 46;
   const weekLabels = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
   const todayIndex = (() => {
     const jsDay = new Date().getDay();
     return jsDay === 0 ? 6 : jsDay - 1;
   })();
+
   const navLinks = [
     { id: 'home', label: 'Home', to: '/', icon: HomeIcon },
     { id: 'clientes', label: 'Clientes', to: '/clientes', icon: Users },
@@ -263,138 +259,178 @@ function RepresentativeHome({ user }) {
     { id: 'progresso', label: 'Progresso', to: '/games', icon: Trophy },
     { id: 'perfil', label: 'Perfil', to: '/perfil', icon: UserRound },
   ];
-  const activeNav = 'home';
-  const firstName = user?.name?.split(' ')[0] ?? 'Geovane';
+
+  const firstName = user?.name?.split(' ')[0] ?? 'Representante';
+
   const summary = [
     { id: 'tempo', label: 'Tempo de vendas', value: `${daysElapsed}/${daysTotal} dias` },
-    { id: 'vendas', label: 'Vendas realizadas', value: `${formatCurrency(currentValue)} / ${formatCurrency(monthTarget)}` },
+    { id: 'vendas', label: 'Vendas realizadas', value: `${formatCurrency(currentValue)}/${formatCurrency(monthTarget)}` },
     { id: 'diaria', label: 'Necessidade diaria', value: formatCurrency(Math.max(dailyGoal, 0)) },
   ];
-  const challengeList = weeklyChallenges.slice(0, 3);
 
   return (
     <div className="mx-auto flex w-full max-w-[560px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800 sm:max-w-[720px] lg:max-w-[900px]">
+      {/* Header */}
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-semibold text-[#4D8BFF] shadow">
             {avatarInitials}
           </div>
           <div>
-            <p className="text-sm text-slate-500">Boa tarde,</p>
+            <p className="text-sm text-slate-500">{greeting}</p>
             <p className="text-xl font-semibold text-slate-900">{firstName}</p>
           </div>
         </div>
         <button
           type="button"
           className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
-          aria-label="Notificacoes"
+          aria-label="Notificações"
         >
           <Bell className="h-5 w-5" />
         </button>
       </header>
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
-          <p className="text-sm font-semibold text-slate-700">Meu progresso</p>
-          <div className="mt-4 flex flex-col items-center gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="relative h-40 w-40 md:h-44 md:w-44">
-              <StackedRings rings={progressRings} size={170} strokeWidth={12} />
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Meta</p>
-                <p className="text-3xl font-bold text-slate-900">{Math.round(monthPercent * 100)}%</p>
-              </div>
-            </div>
-            <dl className="flex-1 space-y-3 text-sm text-slate-600">
-              {summary.map((item) => (
-                <div key={item.id}>
-                  <dt className="text-[13px] text-[#9CA3AF]">{item.label}</dt>
-                  <dd className="text-base font-semibold text-slate-900">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src={lightningBlue} alt="Icone de raio" className="h-16 w-16 object-contain" />
-              <p className="text-sm font-semibold text-slate-700">Streak</p>
-            </div>
-            <p className="text-sm font-semibold text-slate-900">{streakDays} dias seguidos</p>
-          </div>
-          <div className="mt-4 flex items-center gap-4">
-            <div className="hidden md:block" />
-            <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
-              {weekLabels.map((label, index) => {
-                const hasSale = index < streakDays;
-                const isToday = index === todayIndex;
-                const emojiSrc = hasSale ? goodEmoji : sadEmoji;
-                return (
-                  <div key={label} className="flex flex-col items-center gap-1 text-[10px] font-semibold uppercase text-slate-400">
-                    <span
-                      className={`flex h-11 w-11 items-center justify-center rounded-full ${
-                        hasSale ? 'bg-[#E4ECFF]' : 'bg-[#F3F4F6]'
-                      } ${isToday ? 'ring-2 ring-[#4D8BFF]' : ''}`}
-                    >
-                      <img src={emojiSrc} alt={hasSale ? 'dia com venda' : 'dia sem venda'} className="h-7 w-7 object-contain" />
-                    </span>
-                    {label}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="O que você gostaria de saber..."
+          className="w-full rounded-full border border-slate-200 bg-white/80 py-3 pl-12 pr-4 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-[#4D8BFF] focus:outline-none focus:ring-2 focus:ring-[#4D8BFF]/20"
+        />
       </div>
 
-      <section className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-900/10 ring-1 ring-slate-100">
-        <p className="text-sm font-semibold text-slate-700">Desafios da semana</p>
-        <div className="mt-4 space-y-3">
-          {challengeList.map((challenge) => {
-            const progress = challenge.target ? Math.min(1, challenge.current / challenge.target) : 0;
-            const percent = Math.round(progress * 100);
-            const valueLabel =
-              challenge.type === 'currency'
-                ? `${formatCurrency(challenge.current)} / ${formatCurrency(challenge.target)}`
-                : `${challenge.current}/${challenge.target}`;
+      {/* Meta Card */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-slate-700">Tempo de vendas</p>
+          <p className="text-xs text-slate-500 mt-1">{daysElapsed}/{daysTotal} dias</p>
+        </div>
+
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          {/* Donut Chart */}
+          <div className="relative h-40 w-40">
+            <DonutChart size={160} strokeWidth={14} innerPercent={60} outerPercent={metaPercent} />
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+              <p className="text-2xl font-bold text-slate-900">{Math.round(metaPercent)}%</p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-400">Meta</p>
+            </div>
+          </div>
+
+          {/* Text Summary */}
+          <div className="flex-1 space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Vendas realizadas</p>
+              <p className="text-base font-bold text-slate-900">{formatCurrency(currentValue)}</p>
+              <p className="text-xs text-slate-500 mt-1">Meta: {formatCurrency(monthTarget)}</p>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Necessidade diária</p>
+              <p className="text-base font-bold text-slate-900">{formatCurrency(Math.max(dailyGoal, 0))}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Streak Card */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <img src={lightningBlue} alt="Streak icon" className="h-8 w-8 object-contain" />
+            <p className="text-sm font-semibold text-slate-700">Streak</p>
+          </div>
+          <p className="text-2xl font-bold text-slate-900">{streakDays}</p>
+        </div>
+
+        <p className="text-xs text-slate-500 mb-4">dias seguidos</p>
+
+        <div className="flex items-center justify-between gap-2">
+          {weekLabels.map((label, index) => {
+            const hasSale = index < streakDays % 7;
+            const isToday = index === todayIndex;
+            const emojiSrc = hasSale ? goodEmoji : sadEmoji;
 
             return (
-              <article key={challenge.id} className="rounded-2xl border border-[#F3F4F6] bg-white/95 p-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-slate-400">
-                    <UserRound className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{challenge.label}</p>
-                    <p className="text-xs text-slate-500">{valueLabel}</p>
-                  </div>
-                </div>
-                <div className="mt-3 h-2 rounded-full bg-[#E5E7EB]" role="presentation">
-                  <div
-                    className="h-full rounded-full bg-[#4D8BFF]"
-                    style={{ width: `${percent}%` }}
-                    aria-label={`${percent}% concluido`}
-                  />
-                </div>
-              </article>
+              <div key={label} className="flex flex-col items-center gap-1">
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    hasSale ? 'bg-blue-100' : 'bg-gray-100'
+                  } ${isToday ? 'ring-2 ring-[#4D8BFF]' : ''}`}
+                >
+                  <img src={emojiSrc} alt={hasSale ? 'dia com venda' : 'dia sem venda'} className="h-6 w-6 object-contain" />
+                </span>
+                <p className="text-[10px] font-semibold uppercase text-slate-500">{label}</p>
+              </div>
             );
           })}
         </div>
       </section>
 
+      {/* Weekly Challenges Card */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
+        <p className="text-sm font-semibold text-slate-700 mb-4">Desafios da semana</p>
+
+        <div className="space-y-4">
+          {weeklyChallenges.map((challenge) => {
+            const progress = challenge.target ? Math.min(100, (challenge.current / challenge.target) * 100) : 0;
+
+            return (
+              <div key={challenge.id} className="flex items-start gap-3">
+                {/* Color Circle */}
+                <div
+                  className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center mt-1"
+                  style={{ backgroundColor: challenge.bgColor }}
+                >
+                  <div
+                    className="h-6 w-6 rounded-full"
+                    style={{ backgroundColor: challenge.color }}
+                  />
+                </div>
+
+                {/* Challenge Info & Progress Bar */}
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{challenge.label}</p>
+                      <p className="text-xs text-slate-500">{challenge.helper}</p>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${progress}%`,
+                        backgroundColor: challenge.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Bottom Navigation */}
       <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30">
         <ul className="flex items-center justify-between text-xs font-semibold">
           {navLinks.map((nav) => {
-            const isActive = nav.id === activeNav;
+            const isActive = nav.id === 'home';
             return (
               <li key={nav.id}>
                 <Link
                   to={nav.to}
-                  className={`flex flex-col items-center gap-1 transition ${isActive ? 'text-[#4D8BFF]' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`flex flex-col items-center gap-1 transition ${
+                    isActive ? 'text-[#4D8BFF]' : 'text-slate-500 hover:text-slate-700'
+                  }`}
                 >
                   <nav.icon className="h-5 w-5" />
-                  <span>{nav.label}</span>
+                  <span className="text-[11px]">{nav.label}</span>
                 </Link>
               </li>
             );
@@ -404,6 +440,7 @@ function RepresentativeHome({ user }) {
     </div>
   );
 }
+
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
   const capitalizedName = user?.name?.split(' ')[0] ?? 'gestor';
@@ -458,7 +495,26 @@ function ManagerHome({ user }) {
           <div className="w-full rounded-3xl border border-white/20 bg-white/70 p-4 shadow-lg shadow-slate-900/10 lg:w-auto">
             <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">Pulso da coleção</p>
             <div className="relative mx-auto mt-4 h-48 w-48">
-              <StackedRings rings={managerRings} size={192} strokeWidth={14} />
+              <svg width={192} height={192}>
+                <AnimatedRing
+                  size={192}
+                  radius={192 / 2 - 7}
+                  strokeWidth={14}
+                  percent={Math.round(metaPercent)}
+                  color="#0a2f4f"
+                  trackColor="rgba(10, 47, 79, 0.2)"
+                  delay={0}
+                />
+                <AnimatedRing
+                  size={192}
+                  radius={192 / 2 - 7 - 22}
+                  strokeWidth={14}
+                  percent={Math.round(timePct)}
+                  color="#94a3b8"
+                  trackColor="rgba(148, 163, 184, 0.25)"
+                  delay={150}
+                />
+              </svg>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Região</p>
                 <p className="text-2xl font-bold text-slate-900">{Math.round(metaPercent)}%</p>
@@ -616,5 +672,3 @@ export default function HomePage() {
 
   return <HomeLayout>{isManager ? <ManagerHome user={user} /> : <RepresentativeHome user={user} />}</HomeLayout>;
 }
-
-
