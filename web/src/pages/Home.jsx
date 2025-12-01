@@ -302,17 +302,10 @@ function RepresentativeHome({ user }) {
         />
       </div>
 
-      {/* Bloco principal: Meta + Streak */}
+            {/* Bloco principal: Meta + Streak */}
       <div className="grid gap-5 lg:grid-cols-2 items-stretch">
-        {/* Meta Card */}
+        {/* Meta + Resumo de vendas */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
-          <div className="mb-4">
-            <p className="text-sm font-semibold text-slate-700">Tempo de vendas</p>
-            <p className="text-xs text-slate-500 mt-1">
-              {daysElapsed}/{daysTotal} dias
-            </p>
-          </div>
-
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             {/* Donut Chart */}
             <div className="relative h-40 w-40 mx-auto md:mx-0">
@@ -322,35 +315,34 @@ function RepresentativeHome({ user }) {
                 innerPercent={60}
                 outerPercent={metaPercent}
               />
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                <p className="text-2xl font-bold text-slate-900">
-                  {Math.round(metaPercent)}%
-                </p>
-                <p className="text-[10px] uppercase tracking-wider text-slate-400">
-                  Meta
-                </p>
-              </div>
+              {/* Centro vazio, sem texto de % */}
             </div>
 
-            {/* Text Summary */}
-            <div className="flex-1 space-y-4 mt-2 md:mt-0">
+            {/* Text Summary alinhado por cor */}
+            <div className="flex-1 space-y-3">
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Vendas realizadas
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#2563EB]">
+                  Tempo de vendas
                 </p>
-                <p className="text-base font-bold text-slate-900">
-                  {formatCurrency(currentValue)}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Meta: {formatCurrency(monthTarget)}
+                <p className="text-sm font-semibold text-[#2563EB]">
+                  {daysElapsed}/{daysTotal} dias
                 </p>
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#F97316]">
+                  Vendas realizadas
+                </p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {formatCurrency(currentValue)} / {formatCurrency(monthTarget)}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Necessidade diária
                 </p>
-                <p className="text-base font-bold text-slate-900">
+                <p className="text-sm font-semibold text-slate-900">
                   {formatCurrency(Math.max(dailyGoal, 0))}
                 </p>
               </div>
