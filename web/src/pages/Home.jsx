@@ -14,8 +14,9 @@ import {
   Search,
 } from 'lucide-react';
 import lightningBlue from '@/icons/raio-azul.png';
-import goodEmoji from '@/icons/good-emoji.png';
-import sadEmoji from '@/icons/sad-emoji.png';
+import notificationIcon from '@/icons/notification.png';
+import fireEmoji from '@/icons/fire.png';
+import sadEmoji from '@/icons/sad.png';
 
 const managerShortcuts = [
   { id: 'home', label: 'Home', to: '/', helper: 'Pulso regional', icon: HomeIcon },
@@ -282,13 +283,16 @@ function RepresentativeHome({ user }) {
           </div>
         </div>
         <button
-          type="button"
-          className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
-          aria-label="Notificações"
-        >
-          <Bell className="h-5 w-5" />
-        </button>
-      </header>
+  type="button"
+  className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
+  aria-label="Notificações"
+>
+  <img
+    src={notificationIcon}
+    alt="Notificações"
+    className="h-5 w-5 object-contain"
+  />
+</button>
 
       {/* Search Bar */}
       <div className="relative">
@@ -370,7 +374,8 @@ function RepresentativeHome({ user }) {
             {weekLabels.map((label, index) => {
               const hasSale = index < streakDays % 7;
               const isToday = index === todayIndex;
-              const emojiSrc = hasSale ? goodEmoji : sadEmoji;
+              const emojiSrc = hasSale ? fireEmoji : sadEmoji;
+
 
               return (
                 <div
