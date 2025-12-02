@@ -471,7 +471,7 @@ function RepresentativeHome({ user }) {
           })}
         </ul>
       </nav>
-    </div>   // <-- FECHANDO APENAS O CONTAINER DO RepresentativeHome
+    </div>
   );
 }
 
