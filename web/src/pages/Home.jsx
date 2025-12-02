@@ -116,17 +116,27 @@ const HOME_STYLES = `
 
 function HomeLayout({ children }) {
   return (
-    <div className="home-shell relative min-h-screen overflow-hidden bg-[#020617]">
+    <div className="home-shell relative min-h-screen overflow-hidden bg-blue-900">
       <style>{HOME_STYLES}</style>
       <div className="pointer-events-none absolute inset-0">
-        <div className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl" aria-hidden />
-        <div className="home-glow absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-[160px]" aria-hidden />
-        <div className="home-glow absolute inset-x-1/3 bottom-[-6rem] h-72 w-72 rounded-full bg-blue-400/25 blur-[140px]" aria-hidden />
+        <div
+          className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="home-glow absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-[160px]"
+          aria-hidden
+        />
+        <div
+          className="home-glow absolute inset-x-1/3 bottom-[-6rem] h-72 w-72 rounded-full bg-blue-400/25 blur-[140px]"
+          aria-hidden
+        />
       </div>
       <div className="relative z-10 w-full px-4 py-10 sm:px-6 lg:px-10">{children}</div>
     </div>
   );
 }
+
 
 const formatCurrency = (value) => `R$ ${value.toLocaleString('pt-BR')}`;
 
