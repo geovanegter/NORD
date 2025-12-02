@@ -650,7 +650,6 @@ function ManagerHome({ user }) {
             <Link
               key={shortcut.id}
               to={shortcut.to}
-              className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left
               className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70 hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
             >
               <p className="text-lg" aria-hidden>
