@@ -241,7 +241,7 @@ function RepresentativeHome({ user }) {
   const daysElapsed = myDayStatus?.daysElapsed ?? 30;
   const daysTotal = myDayStatus?.daysTotal ?? 90;
   const daysRemaining = myDayStatus?.daysRemaining ?? 60;
-  
+
   const metaPercent = monthTarget ? Math.min(100, (currentValue / monthTarget) * 100) : 0;
   const remaining = Math.max(0, monthTarget - currentValue);
   const dailyGoal = daysRemaining > 0 ? Math.ceil(remaining / daysRemaining) : monthTarget / (daysTotal || 1);
@@ -263,12 +263,6 @@ function RepresentativeHome({ user }) {
 
   const firstName = user?.name?.split(' ')[0] ?? 'Representante';
 
-  const summary = [
-    { id: 'tempo', label: 'Tempo de vendas', value: `${daysElapsed}/${daysTotal} dias` },
-    { id: 'vendas', label: 'Vendas realizadas', value: `${formatCurrency(currentValue)}/${formatCurrency(monthTarget)}` },
-    { id: 'diaria', label: 'Necessidade diaria', value: formatCurrency(Math.max(dailyGoal, 0)) },
-  ];
-
   return (
     <div className="mx-auto flex w-full max-w-[640px] sm:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1200px] flex-col gap-5 px-4 pb-28 pt-6 text-slate-800">
       {/* Header */}
@@ -283,16 +277,17 @@ function RepresentativeHome({ user }) {
           </div>
         </div>
         <button
-  type="button"
-  className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
-  aria-label="Notificações"
->
-  <img
-    src={notificationIcon}
-    alt="Notificações"
-    className="h-5 w-5 object-contain"
-  />
-</button>
+          type="button"
+          className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
+          aria-label="Notificações"
+        >
+          <img
+            src={notificationIcon}
+            alt="Notificações"
+            className="h-5 w-5 object-contain"
+          />
+        </button>
+      </header>
 
       {/* Search Bar */}
       <div className="relative">
@@ -306,7 +301,7 @@ function RepresentativeHome({ user }) {
         />
       </div>
 
-            {/* Bloco principal: Meta + Streak */}
+      {/* Bloco principal: Meta + Streak */}
       <div className="grid gap-5 lg:grid-cols-2 items-stretch">
         {/* Meta + Resumo de vendas */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
@@ -319,7 +314,7 @@ function RepresentativeHome({ user }) {
                 innerPercent={60}
                 outerPercent={metaPercent}
               />
-              {/* Centro vazio, sem texto de % */}
+              {/* Centro vazio */}
             </div>
 
             {/* Text Summary alinhado por cor */}
@@ -376,7 +371,6 @@ function RepresentativeHome({ user }) {
               const isToday = index === todayIndex;
               const emojiSrc = hasSale ? fireEmoji : sadEmoji;
 
-
               return (
                 <div
                   key={label}
@@ -403,7 +397,7 @@ function RepresentativeHome({ user }) {
         </section>
       </div>
 
-      {/* Weekly Challenges Card */}
+      {/* Desafios da semana */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
         <p className="text-sm font-semibold text-slate-700 mb-4">Desafios da semana</p>
 
@@ -413,7 +407,7 @@ function RepresentativeHome({ user }) {
 
             return (
               <div key={challenge.id} className="flex items-start gap-3">
-                {/* Color Circle */}
+                {/* Círculo colorido */}
                 <div
                   className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center mt-1"
                   style={{ backgroundColor: challenge.bgColor }}
@@ -424,7 +418,7 @@ function RepresentativeHome({ user }) {
                   />
                 </div>
 
-                {/* Challenge Info & Progress Bar */}
+                {/* Info + barra */}
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -433,7 +427,6 @@ function RepresentativeHome({ user }) {
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
                   <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
@@ -450,7 +443,7 @@ function RepresentativeHome({ user }) {
         </div>
       </section>
 
-            {/* Bottom Navigation */}
+      {/* Bottom Navigation - só mobile */}
       <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30 md:hidden">
         <ul className="flex items-center justify-between text-xs font-semibold">
           {navLinks.map((nav) => {
@@ -474,6 +467,7 @@ function RepresentativeHome({ user }) {
     </div>
   );
 }
+
 
 
 function ManagerHome({ user }) {
