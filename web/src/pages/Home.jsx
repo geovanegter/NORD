@@ -126,20 +126,53 @@ function useLocalizedGreeting() {
   return info;
 }
 
-function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = '#e2e8f0', delay = 0 }) {
+function AnimatedRing({
+  size,
+  radius,
+  strokeWidth,
+  percent,
+  color,
+  trackColor = '#e2e8f0',
+  delay = 0,
+}) {
   const circumference = 2 * Math.PI * radius;
   const [progress, setProgress] = useState(0);
   const center = size / 2;
+
   useEffect(() => {
     const timeout = setTimeout(() => setProgress(percent ?? 0), delay);
     return () => clearTimeout(timeout);
   }, [percent, delay]);
-  const offset = circumference * (1 - Math.max(0, Math.min(progress, 100)) / 100);
+
+  const offset =
+    circumference * (1 - Math.max(0, Math.min(progress, 100)) / 100);
   const rotation = `rotate(-90 ${center} ${center})`;
+
   return (
     <>
-      circle cx={center} cy={center} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" transform={rotation} />
-      circle cx={center} cy={center} r={radius} stroke={color} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} transform={rotation} style={{ transition: 'stroke-dashoffset 1s ease' }} />
+      <circle
+        cx={center}
+        cy={center}
+        r={radius}
+        stroke={trackColor}
+        strokeWidth={strokeWidth}
+        fill="transparent"
+        strokeLinecap="round"
+        transform={rotation}
+      />
+      <circle
+        cx={center}
+        cy={center}
+        r={radius}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        fill="transparent"
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        transform={rotation}
+        style={{ transition: 'stroke-dashoffset 1s ease' }}
+      />
     </>
   );
 }
