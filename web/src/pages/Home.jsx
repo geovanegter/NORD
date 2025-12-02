@@ -471,9 +471,10 @@ function RepresentativeHome({ user }) {
           })}
         </ul>
       </nav>
-    </div>
+    </div>   // <-- FECHANDO APENAS O CONTAINER DO RepresentativeHome
   );
 }
+
 
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
