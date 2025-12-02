@@ -544,28 +544,6 @@ function ManagerHome({ user }) {
   );
 }
 
-function ManagerHome({ user }) {
-  const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
-  const capitalizedName = user?.name?.split(' ')[0] ?? 'gestor';
-  const { greeting } = useLocalizedGreeting();
-  const metaPercent = meta?.percent ?? 0;
-  const timePct = timePercent ?? 0;
-  const managerRings = [
-    {
-      id: 'mgr-meta',
-      label: 'Meta da região',
-      percent: Math.round(metaPercent),
-      color: '#0a2f4f',
-      trackColor: 'rgba(10, 47, 79, 0.2)',
-    },
-    {
-      id: 'mgr-time',
-      label: 'Tempo da coleção',
-      percent: Math.round(timePct),
-      color: '#94a3b8',
-      trackColor: 'rgba(148, 163, 184, 0.25)',
-    },
-  ];
 
   return (
     <div className="space-y-6">
