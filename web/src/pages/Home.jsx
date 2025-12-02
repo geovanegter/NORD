@@ -30,35 +30,32 @@ const managerShortcuts = [
 const weeklyChallenges = [
   {
     id: 'positivar',
-    icon: '✅',
     label: 'Positivar 5 clientes',
     current: 5,
     target: 5,
     helper: '5/5 clientes atendidos',
     type: 'count',
-    color: '#10b981', // Verde
+    color: '#10b981',
     bgColor: '#d1fae5',
   },
   {
     id: 'abrir-clientes',
-    icon: '🆕',
     label: 'Abrir 3 clientes',
     current: 1,
     target: 3,
     helper: '1/3 clientes atendidos',
     type: 'count',
-    color: '#3b82f6', // Azul
+    color: '#3b82f6',
     bgColor: '#dbeafe',
   },
   {
     id: 'cidades',
-    icon: '🏙️',
     label: 'Positivar 5 cidades',
     current: 2,
     target: 5,
     helper: '2/5 cidades atendidas',
     type: 'count',
-    color: '#a855f7', // Roxo
+    color: '#a855f7',
     bgColor: '#f3e8ff',
   },
 ];
@@ -119,7 +116,7 @@ const HOME_STYLES = `
 
 function HomeLayout({ children }) {
   return (
-    <div className="home-shell relative min-h-screen overflow-hidden bg-gradient-to-br from-[#020617] to-[#DDE3EB]">
+    <div className="home-shell relative min-h-screen overflow-hidden bg-[#020617]">
       <style>{HOME_STYLES}</style>
       <div className="pointer-events-none absolute inset-0">
         <div className="home-glow absolute -left-24 top-[-8rem] h-80 w-80 rounded-full bg-sky-300/35 blur-3xl" aria-hidden />
@@ -165,7 +162,7 @@ function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 
 
   return (
     <>
-      <circle
+      ircle
         cx={center}
         cy={center}
         r={radius}
@@ -175,7 +172,7 @@ function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 
         strokeLinecap="round"
         transform={rotation}
       />
-      <circle
+      ircle
         cx={center}
         cy={center}
         r={radius}
@@ -199,7 +196,6 @@ function DonutChart({ size = 160, strokeWidth = 14, innerPercent = 60, outerPerc
 
   return (
     <svg width={size} height={size}>
-      {/* Outer ring (blue - progress) */}
       <AnimatedRing
         size={size}
         radius={outerRadius}
@@ -209,7 +205,6 @@ function DonutChart({ size = 160, strokeWidth = 14, innerPercent = 60, outerPerc
         trackColor="rgba(59, 130, 246, 0.15)"
         delay={0}
       />
-      {/* Inner ring (orange - remaining) */}
       <AnimatedRing
         size={size}
         radius={innerRadius}
@@ -281,11 +276,7 @@ function RepresentativeHome({ user }) {
           className="rounded-full border border-white/70 bg-white/80 p-2 text-slate-500 shadow hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D8BFF]/40"
           aria-label="Notificações"
         >
-          <img
-            src={notificationIcon}
-            alt="Notificações"
-            className="h-5 w-5 object-contain"
-          />
+          <img src={notificationIcon} alt="Notificações" className="h-5 w-5 object-contain" />
         </button>
       </header>
 
@@ -308,13 +299,7 @@ function RepresentativeHome({ user }) {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             {/* Donut Chart */}
             <div className="relative h-40 w-40 mx-auto md:mx-0">
-              <DonutChart
-                size={160}
-                strokeWidth={14}
-                innerPercent={60}
-                outerPercent={metaPercent}
-              />
-              {/* Centro vazio */}
+              <DonutChart size={160} strokeWidth={14} innerPercent={60} outerPercent={metaPercent} />
             </div>
 
             {/* Text Summary alinhado por cor */}
@@ -349,29 +334,17 @@ function RepresentativeHome({ user }) {
           </div>
         </section>
 
-                {/* Streak Card */}
+        {/* Streak Card */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
-          {/* Título maior */}
           <p className="text-lg font-semibold text-slate-900 mb-4">Streak</p>
 
-          {/* Raio grande + número de dias */}
           <div className="flex items-center gap-4 mb-2">
-            <img
-              src={lightningBlue}
-              alt="Streak icon"
-              className="h-12 w-12 object-contain"
-            />
-            <p className="text-3xl font-bold text-slate-900">
-              {streakDays}
-            </p>
+            <img src={lightningBlue} alt="Streak icon" className="h-12 w-12 object-contain" />
+            <p className="text-3xl font-bold text-slate-900">{streakDays}</p>
           </div>
 
-          {/* Texto "dias seguidos" */}
-          <p className="text-sm text-slate-500 mb-4">
-            dias seguidos
-          </p>
+          <p className="text-sm text-slate-500 mb-4">dias seguidos</p>
 
-          {/* Linha dos dias da semana (mantida) */}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
             {weekLabels.map((label, index) => {
               const hasSale = index < streakDays % 7;
@@ -379,10 +352,7 @@ function RepresentativeHome({ user }) {
               const emojiSrc = hasSale ? fireEmoji : sadEmoji;
 
               return (
-                <div
-                  key={label}
-                  className="flex flex-col items-center gap-1 w-[13%] sm:w-auto"
-                >
+                <div key={label} className="flex flex-col items-center gap-1 w-[13%] sm:w-auto">
                   <span
                     className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full ${
                       hasSale ? 'bg-blue-100' : 'bg-gray-100'
@@ -402,7 +372,7 @@ function RepresentativeHome({ user }) {
             })}
           </div>
         </section>
-
+      </div>
 
       {/* Desafios da semana */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
@@ -414,18 +384,13 @@ function RepresentativeHome({ user }) {
 
             return (
               <div key={challenge.id} className="flex items-start gap-3">
-                {/* Círculo colorido */}
                 <div
                   className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center mt-1"
                   style={{ backgroundColor: challenge.bgColor }}
                 >
-                  <div
-                    className="h-6 w-6 rounded-full"
-                    style={{ backgroundColor: challenge.color }}
-                  />
+                  <div className="h-6 w-6 rounded-full" style={{ backgroundColor: challenge.color }} />
                 </div>
 
-                {/* Info + barra */}
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -451,7 +416,7 @@ function RepresentativeHome({ user }) {
       </section>
 
       {/* Bottom Navigation - só mobile */}
-           <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30 md:hidden">
+      <nav className="fixed bottom-4 left-1/2 z-20 w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/30 md:hidden">
         <ul className="flex items-center justify-between text-xs font-semibold">
           {navLinks.map((nav) => {
             const isActive = nav.id === 'home';
@@ -474,8 +439,6 @@ function RepresentativeHome({ user }) {
     </div>
   );
 }
-
-
 
 function ManagerHome({ user }) {
   const { meta, timePercent, iaSuggestion, topReps, regionalKPIs, opportunities, riskReps, customersInRisk } = managerOverview;
@@ -687,6 +650,7 @@ function ManagerHome({ user }) {
             <Link
               key={shortcut.id}
               to={shortcut.to}
+              className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left
               className="rounded-3xl border border-white/20 bg-white/80 p-5 text-left text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-200/70 hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
             >
               <p className="text-lg" aria-hidden>
@@ -706,5 +670,9 @@ export default function HomePage() {
   const { user } = useAuth();
   const isManager = user?.perfil && user.perfil !== 'representante';
 
-  return <HomeLayout>{isManager ? <ManagerHome user={user} /> : <RepresentativeHome user={user} />}</HomeLayout>;
+  return (
+    <HomeLayout>
+      {isManager ? <ManagerHome user={user} /> : <RepresentativeHome user={user} />}
+    </HomeLayout>
+  );
 }
