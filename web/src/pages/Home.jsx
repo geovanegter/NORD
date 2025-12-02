@@ -349,22 +349,29 @@ function RepresentativeHome({ user }) {
           </div>
         </section>
 
-        {/* Streak Card */}
+                {/* Streak Card */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <img
-                src={lightningBlue}
-                alt="Streak icon"
-                className="h-8 w-8 object-contain"
-              />
-              <p className="text-sm font-semibold text-slate-700">Streak</p>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">{streakDays}</p>
+          {/* Título maior */}
+          <p className="text-lg font-semibold text-slate-900 mb-4">Streak</p>
+
+          {/* Raio grande + número de dias */}
+          <div className="flex items-center gap-4 mb-2">
+            <img
+              src={lightningBlue}
+              alt="Streak icon"
+              className="h-12 w-12 object-contain"
+            />
+            <p className="text-3xl font-bold text-slate-900">
+              {streakDays}
+            </p>
           </div>
 
-          <p className="text-xs text-slate-500 mb-4">dias seguidos</p>
+          {/* Texto "dias seguidos" */}
+          <p className="text-sm text-slate-500 mb-4">
+            dias seguidos
+          </p>
 
+          {/* Linha dos dias da semana (mantida) */}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
             {weekLabels.map((label, index) => {
               const hasSale = index < streakDays % 7;
@@ -395,7 +402,7 @@ function RepresentativeHome({ user }) {
             })}
           </div>
         </section>
-      </div>
+
 
       {/* Desafios da semana */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/10">
