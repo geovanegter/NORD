@@ -138,8 +138,8 @@ function AnimatedRing({ size, radius, strokeWidth, percent, color, trackColor = 
   const rotation = `rotate(-90 ${center} ${center})`;
   return (
     <>
-      ircle cx={center} cy={center} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" transform={rotation} />
-      ircle cx={center} cy={center} r={radius} stroke={color} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} transform={rotation} style={{ transition: 'stroke-dashoffset 1s ease' }} />
+      circle cx={center} cy={center} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" transform={rotation} />
+      circle cx={center} cy={center} r={radius} stroke={color} strokeWidth={strokeWidth} fill="transparent" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} transform={rotation} style={{ transition: 'stroke-dashoffset 1s ease' }} />
     </>
   );
 }
